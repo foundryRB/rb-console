@@ -1,0 +1,99 @@
+# foundry-console tests: the backend suite (the REST and MCP door tests plus the
+# orchestrator core), the cross-runtime intent audit, the frontend component tests, and the
+# frontend responsive regression. Separate from build.yml (conformance + release): tests
+# gate the code, the build ships artifacts.
+#
+# Runs on the in-cluster ARC runners (runs-on: arc-dind), like build.yml, so no job
+# consumes GitHub-hosted minutes. Each job runs in a container because the ARC runner is
+# the stock gha-runner-scale-set image (non-root `runner`, no sudo, no preinstalled
+# toolcache): python:3.12 carries Python + git + build tools for the backend and intent
+# jobs, and the matching Playwright image carries the browser + its system deps for the
+# e2e job (so no `--with-deps` apt, which would need the root the runner does not grant).
+#
+# Trade-off (deliberate): tests now depend on the install's cluster being up - when k3s is down they queue
+# for a runner rather than running on GitHub-hosted.
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: arc-dind
+    container: python:3.12
+    steps:
+      - uses: actions/checkout@v4
+      # jq is the worker entrypoint's own runtime dependency (the image bakes it); the
+      # execution suite (test_entrypoint_execution.py) runs the real script, whose
+      # step-8 PR matching shells out to it - absent jq those cases skip, not fail.
+      - run: apt-get update -qq && apt-get install -y -qq --no-install-recommends jq
+      # Helm renders the chart for the rendered-deployment checks (test_web_packaging.py),
+      # which skip without it.
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+      - run: python -m pip install --upgrade pip
+      - run: pip install ".[test]"
+      - run: python -m pytest -q
+
+  intent-audit:
+    runs-on: arc-dind
+    container: python:3.12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install csd-intent
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[test]"
+      - name: Audit intent claims (cross-runtime)
+        run: csd-intent . --fail-on any
+
+  # The documentation site: its page-structure and source-mirror claims (the STARLIGHT bundle
+  # and the console's INT-FC-DOCS-*) run here, and the site must build.
+  docs:
+    runs-on: arc-dind
+    container: node:22
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+  # The frontend component tests: vitest + Testing Library render views in jsdom with the
+  # API layer mocked.
+  frontend-unit:
+    runs-on: arc-dind
+    container: node:22
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm test
+
+  # The frontend responsive regression suite: Playwright drives the real SPA with the /api
+  # layer stubbed in-browser, holding the desktop cockpit still while the mobile/tablet
+  # layer evolves. Runs in the Playwright image (v1.61.1, matching @playwright/test in the
+  # lockfile) so the browser and its system deps are already present - no `--with-deps`.
+  frontend-e2e:
+    runs-on: arc-dind
+    container: mcr.microsoft.com/playwright:v1.61.1-jammy
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - name: Install Playwright browser
+        run: npx playwright install chromium
+      - name: Responsive regression suite
+        run: npm run e2e

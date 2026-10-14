@@ -1,0 +1,63 @@
+{
+    "name": "foundry-console-frontend",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "npm run models:generate && tsc -b && vite build",
+        "lint": "node scripts/view-boundaries.mjs && eslint .",
+        "preview": "vite preview",
+        "test": "vitest run",
+        "e2e": "playwright test",
+        "models:export": "python ../tools/export_openapi.py --output src/models/openapi.json",
+        "models:generate": "node scripts/generate-models.mjs",
+        "models:sync": "npm run models:export && npm run models:generate",
+        "format": "prettier --write src --ignore-path .prettierignore",
+        "check": "prettier --check src --ignore-path .prettierignore && npm run lint",
+        "test:boundaries": "node --test scripts/view-boundaries.test.mjs"
+    },
+    "dependencies": {
+        "@monaco-editor/react": "^4.7.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "dompurify": "^3.4.16",
+        "monaco-editor": "^0.57.0",
+        "react": "^19.2.6",
+        "react-dom": "^19.2.6",
+        "react-router-dom": "^7.18.4",
+        "tailwind-merge": "^3.6.0",
+        "zustand": "^5.0.8"
+    },
+    "overrides": {
+        "monaco-editor": {
+            "dompurify": "$dompurify"
+        }
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@playwright/test": "^1.61.1",
+        "@psa-department-of-engineering/playwright-intent": "^2.0.1",
+        "@testing-library/dom": "^10.4.2",
+        "@testing-library/react": "^16.3.3",
+        "@types/node": "^24.12.3",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.0.1",
+        "autoprefixer": "^10.5.0",
+        "eslint": "^10.3.0",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.5.2",
+        "globals": "^17.6.0",
+        "jsdom": "^30.1.2",
+        "openapi-typescript": "^7.13.0",
+        "postcss": "^8.5.28",
+        "prettier": "^3.8.4",
+        "tailwindcss": "^3.4.19",
+        "typescript": "~5.9.3",
+        "typescript-eslint": "^8.59.2",
+        "vite": "^8.0.12",
+        "vite-plugin-pwa": "^1.3.0",
+        "vitest": "^4.1.11"
+    }
+}

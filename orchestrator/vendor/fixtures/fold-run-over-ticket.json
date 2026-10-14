@@ -1,0 +1,23 @@
+{
+  "name": "fold-run-over-ticket",
+  "why": "Fold 1: a live run is THE row for the concern it works. Without it the queue shows a running row and, beside it, that same ticket reading as plain untouched work - two rows for one concern, and the reader re-drives what is already in hand. #5 has no run, so it keeps its own row: the fold is scoped to the concern being worked, not to the repo.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 4, "title": "The header collapses", "labels": [], "created_at": "2026-08-01T09:00:00Z"},
+          {"number": 5, "title": "Untouched by any run", "labels": [], "created_at": "2026-08-02T09:00:00Z"}
+        ],
+        "prs": [],
+        "train": {}
+      }
+    ],
+    "archived": [],
+    "running": [{"repo": "acme/app", "act": "resolve", "number": 4}]
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "running", "detail": "resolve #4 in progress: The header collapses", "act": "watch", "number": 4, "ts": "", "stage": "in-progress", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#5 Untouched by any run", "act": "resolve", "number": 5, "ts": "2026-08-02T09:00:00Z", "stage": "open", "hidden": false}
+  ]
+}

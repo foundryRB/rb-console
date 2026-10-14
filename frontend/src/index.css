@@ -1,0 +1,549 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The Vodafone brand face, licensed for Vodafone internal use: these surfaces are Vodafone's
+   own (the operator's ruling of 2026-09-07). The Vodafone Portugal Digital identity. */
+@font-face { font-family: "Vodafone"; src: url("/fonts/Vodafone-300.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Vodafone"; src: url("/fonts/Vodafone-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Vodafone"; src: url("/fonts/Vodafone-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Vodafone"; src: url("/fonts/Vodafone-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Vodafone"; src: url("/fonts/Vodafone-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Vodafone"; src: url("/fonts/Vodafone-800.woff2") format("woff2"); font-weight: 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; font-weight: 600; font-style: normal; font-display: swap; src: url("/fonts/JetBrainsMono-600.woff2") format("woff2"); }
+:root { --vfd-font: "Vodafone", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+/* Two appearances driven by the html class, which the appearance runtime sets before paint
+   (vodafone-appearance.js): paper on :root, and the Vodafone Portugal Digital stage on .dark (bg0
+   floor, bg1 cards, hairlines, the red as the accent). color-scheme stops the browser from
+   force-darkening either. */
+@layer base {
+    :root {
+        color-scheme: light;
+        --background: 0 0% 94.9%;
+        --foreground: 210 8% 15.7%;
+        --card: 0 0% 100%;
+        --card-foreground: 210 8% 15.7%;
+        --primary: 0 100% 45.1%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 0 0% 94.9%;
+        --secondary-foreground: 210 8% 15.7%;
+        --muted: 0 0% 94.9%;
+        --muted-foreground: 195 3% 29.8%;
+        --accent: 0 0% 94.9%;
+        --accent-foreground: 210 8% 15.7%;
+        --destructive: 353 62% 41.8%;
+        --destructive-foreground: 0 0% 94.9%;
+        --success: 142 60% 26%;
+        --success-foreground: 0 0% 100%;
+        --border: 0 0% 74.5%;
+        --input: 0 0% 74.5%;
+        --ring: 188 100% 27.4%;
+        --radius: 0.6rem;
+        --brand: 0 100% 45.1%;
+        --brand-ink: 0 0% 100%;
+        --link: 0 100% 38.4%;
+        --well: 0 0% 72%;
+        --faint: hsl(var(--muted-foreground));
+        --editor: var(--card);
+    }
+    .dark {
+        color-scheme: dark;
+        --background: 230 43% 3%;
+        --foreground: 220 30% 96%;
+        --card: 223 24% 6%;
+        --card-foreground: 220 30% 96%;
+        --primary: 0 100% 45%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 222 23% 9%;
+        --secondary-foreground: 220 30% 96%;
+        --muted: 220 10% 11%;
+        --muted-foreground: 217 14% 70%;
+        --accent: 220 8% 14%;
+        --accent-foreground: 220 30% 96%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 210 5% 96%;
+        --success: 142 55% 42%;
+        --success-foreground: 140 40% 96%;
+        --border: 223 9% 15%;
+        --input: 230 7% 18%;
+        --ring: 0 100% 62%;
+        --radius: 0.6rem;
+        --brand: 0 100% 45%;
+        --brand-ink: 0 0% 100%;
+        --link: 0 100% 71%;
+        --well: 0 0% 0%;
+        --faint: hsl(var(--muted-foreground) / 0.6);
+        --editor: 24 19% 5.3%;
+    }
+    * {
+        border-color: hsl(var(--border));
+    }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background-color: hsl(var(--background));
+        /* A faint red bloom rising off the stage. */
+        background-image: radial-gradient(
+            1200px 480px at 50% -10%,
+            hsl(0 100% 62% / 0.09),
+            transparent 70%
+        );
+        background-attachment: fixed;
+        color: hsl(var(--foreground));
+        font-family: var(--vfd-font);
+        -webkit-font-smoothing: antialiased;
+    }
+    :focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 3px;
+    }
+}
+.app-glass {
+    position: relative;
+    background-color: hsl(var(--card) / 0.68);
+    background-image: linear-gradient(135deg, hsl(var(--foreground) / 0.035), transparent 55%);
+    -webkit-backdrop-filter: blur(16px) saturate(1.15);
+    backdrop-filter: blur(16px) saturate(1.15);
+    box-shadow: inset 0 1px 0 hsl(var(--foreground) / 0.045), 0 8px 28px hsl(var(--background) / 0.12);
+}
+.app-glass:focus-within { z-index: 1; }
+.app-glass[aria-pressed='true'] {
+    background-image: linear-gradient(hsl(var(--brand) / 0.12), hsl(var(--brand) / 0.12));
+}
+@supports not (backdrop-filter: blur(1px)) {
+    .app-glass { background-color: hsl(var(--card)); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    .app-glass { background-color: hsl(var(--card)); backdrop-filter: none; }
+}
+.app-frame {
+    width: calc(100% - 64px);
+    max-width: 1120px;
+    margin-inline: auto;
+}
+.app-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-block: 24px;
+}
+.app-header nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.app-wordmark {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.065em;
+}
+.app-wordmark span {
+    color: hsl(var(--brand));
+}
+.app-main {
+    padding-block: 32px 56px;
+}
+.app-main > div {
+    max-width: none;
+}
+.app-main h2 {
+    font-size: 28px;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+}
+.app-main button.bg-primary {
+    background: hsl(var(--brand));
+    color: hsl(var(--brand-ink));
+}
+.app-atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 100% 15%, hsl(var(--brand) / 0.13), transparent 55%),
+        radial-gradient(ellipse at 0% 85%, hsl(var(--brand) / 0.08), transparent 50%);
+}
+.app-atmosphere svg {
+    position: absolute;
+    top: -10vh;
+    width: 28vw;
+    min-width: 170px;
+    height: 120vh;
+    overflow: visible;
+    fill: none;
+    stroke: hsl(var(--primary));
+    stroke-width: 1;
+    opacity: 0.28;
+    animation: app-flow 24s ease-in-out infinite alternate;
+}
+.app-atmosphere .left {
+    left: -11vw;
+    scale: -1 1;
+    animation-delay: -12s;
+}
+.app-atmosphere .right {
+    right: -11vw;
+}
+.app-atmosphere i {
+    position: absolute;
+    bottom: -8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 45% 55%;
+    background: hsl(var(--brand));
+    box-shadow: 0 0 6px hsl(var(--brand) / 0.5);
+    opacity: 0;
+    animation: app-rise 20s linear infinite;
+}
+@keyframes app-flow {
+    to {
+        translate: 0 6vh;
+        rotate: 3deg;
+    }
+}
+@keyframes app-rise {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.6);
+    }
+    15% {
+        opacity: 0.5;
+    }
+    65% {
+        opacity: 0.35;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(16px, -85vh);
+    }
+}
+.app-atmosphere[data-paused='true'] * {
+    animation-play-state: paused;
+}
+@media (max-width: 760px) {
+    .app-frame {
+        width: calc(100% - 40px);
+    }
+    .app-header {
+        gap: 14px;
+        padding-block: 20px;
+    }
+    .app-header nav {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+    .app-header nav button {
+        white-space: nowrap;
+    }
+    .app-main {
+        padding-top: 24px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .app-atmosphere * {
+        animation: none !important;
+    }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    .app-atmosphere {
+        display: none;
+    }
+}
+@media print {
+    .app-atmosphere,
+    header {
+        display: none !important;
+    }
+    body {
+        background: white;
+        color: black;
+    }
+    .app-frame {
+        width: 100%;
+    }
+}
+.app-atmosphere i:nth-of-type(1) {
+    left: 3%;
+    animation-delay: 0s;
+    animation-duration: 14s;
+}
+.app-atmosphere i:nth-of-type(2) {
+    left: 85%;
+    animation-delay: -1.7s;
+    animation-duration: 16s;
+}
+.app-atmosphere i:nth-of-type(3) {
+    left: 17%;
+    animation-delay: -3.4s;
+    animation-duration: 18s;
+}
+.app-atmosphere i:nth-of-type(4) {
+    left: 80%;
+    animation-delay: -5.1s;
+    animation-duration: 20s;
+}
+.app-atmosphere i:nth-of-type(5) {
+    left: 12%;
+    animation-delay: -6.8s;
+    animation-duration: 22s;
+}
+.app-atmosphere i:nth-of-type(6) {
+    left: 94%;
+    animation-delay: -8.5s;
+    animation-duration: 24s;
+}
+.app-atmosphere i:nth-of-type(7) {
+    left: 7%;
+    animation-delay: -10.2s;
+    animation-duration: 26s;
+}
+.app-atmosphere i:nth-of-type(8) {
+    left: 89%;
+    animation-delay: -11.9s;
+    animation-duration: 14s;
+}
+.app-atmosphere i:nth-of-type(9) {
+    left: 21%;
+    animation-delay: -13.6s;
+    animation-duration: 16s;
+}
+.app-atmosphere i:nth-of-type(10) {
+    left: 84%;
+    animation-delay: -15.3s;
+    animation-duration: 18s;
+}
+.app-atmosphere i:nth-of-type(11) {
+    left: 16%;
+    animation-delay: -17s;
+    animation-duration: 20s;
+}
+.app-atmosphere i:nth-of-type(12) {
+    left: 79%;
+    animation-delay: -18.7s;
+    animation-duration: 22s;
+}
+.app-atmosphere i:nth-of-type(13) {
+    left: 11%;
+    animation-delay: -20.4s;
+    animation-duration: 24s;
+}
+.app-atmosphere i:nth-of-type(14) {
+    left: 93%;
+    animation-delay: -22.1s;
+    animation-duration: 26s;
+}
+.app-atmosphere i:nth-of-type(15) {
+    left: 6%;
+    animation-delay: -23.8s;
+    animation-duration: 14s;
+}
+.app-atmosphere i:nth-of-type(16) {
+    left: 88%;
+    animation-delay: -25.5s;
+    animation-duration: 16s;
+}
+
+/* The stage's success green; paper keeps the darker one its own tokens set. */
+.dark {
+    --success: 150 46% 69%;
+    --success-foreground: var(--background);
+}
+/* Amber on paper: the status amber at a shade that reads on a light ground. */
+:root:not(.dark) .app-console .text-amber-400 {
+    color: #865500;
+}
+/* Tailwind palette accents that read on the dark stage but wash out on the light one (sky,
+   orange, violet and slate 400 sit under 2.7:1 on paper); the shell remaps amber the same way.
+   Light only: the dark stage keeps its 400 shades. */
+:root[data-theme='light'] .text-sky-400 {
+    color: #0369a1;
+}
+:root[data-theme='light'] .text-orange-400 {
+    color: #c2410c;
+}
+:root[data-theme='light'] .text-violet-400 {
+    color: #6d28d9;
+}
+:root[data-theme='light'] .text-slate-300 {
+    color: #475569;
+}
+:root[data-theme='light'] .text-amber-400\/90 {
+    color: #865500;
+}
+/* The link red at 80% (the ticket line's current step, the record's link hover) reads on the
+   dark stage but thins on paper, most of all over a well; in light it takes the full link red,
+   as plain `.text-link` does. */
+:root[data-theme='light'] .text-link\/80,
+:root[data-theme='light'] .hover\:text-link\/80:hover {
+    color: hsl(var(--link));
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+}
+.app-console header > div:first-child {
+    padding-block: 20px;
+}
+.app-console button.bg-primary {
+    background: hsl(var(--brand));
+    color: hsl(var(--brand-ink));
+}
+/* Co-pilot chat motion: bouncing "thinking" dots, a blinking type caret, and a soft
+   entrance for each new bubble. Tailwind here ships no animation plugin, so the few
+   keyframes the chat needs live as plain utilities. All of it stands down under
+   prefers-reduced-motion. */
+@layer utilities {
+    @keyframes fc-dot {
+        0%,
+        80%,
+        100% {
+            opacity: 0.25;
+            transform: translateY(0);
+        }
+        40% {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+    }
+    @keyframes fc-caret {
+        0%,
+        100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+    @keyframes fc-msg-in {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .fc-thinking-dot {
+        animation: fc-dot 1.2s infinite ease-in-out both;
+    }
+    .fc-caret {
+        animation: fc-caret 1s step-end infinite;
+    }
+    .fc-msg-in {
+        animation: fc-msg-in 0.18s ease-out both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .fc-thinking-dot,
+        .fc-caret,
+        .fc-msg-in {
+            animation: none;
+        }
+    }
+}
+
+/* ── vfpt stage: begin ─────────────── */
+/* The ground stops being a flat fill with a bloom painted on it and becomes the stage.
+   Unlayered on purpose: @layer base holds the `body` rule this has to beat. */
+html {
+  background: linear-gradient(160deg, #0b0d12 0%, #070910 55%, #04050a 100%) fixed;
+}
+body {
+  background-color: transparent;
+  background-image: none;
+}
+/* ── The Digital Engineering stage, alive ──────────────────────────────────────
+   The deck shell's stage (gradient, drifting glows, red grids, rising motes,
+   vignette) rebuilt on pseudo-elements, since this surface takes a stylesheet and
+   no markup. Source: the design hub's design-systems/vodafone-digital-engineering/brand/stage_css.py. App shell (adf-console).
+   Reduced motion and print stop every loop; the resting state is the static stage. */
+body { position: relative; isolation: isolate; }
+html::before, body::before, body::after, html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+html::before {
+  inset: -25vh -25vw;
+  background:
+    radial-gradient(closest-side, rgba(255, 59, 59, 0.30) 0%, rgba(230, 0, 0, 0.10) 55%, rgba(230, 0, 0, 0) 100%) 4vw -5vh / 81vw 95vh no-repeat,
+    radial-gradient(closest-side, rgba(27, 36, 54, 0.85) 0%, rgba(27, 36, 54, 0) 100%) 61vw 50vh / 94vw 105vh no-repeat,
+    radial-gradient(closest-side, rgba(230, 0, 0, 0.16) 0%, rgba(230, 0, 0, 0) 100%) 61vw 3vh / 69vw 75vh no-repeat;
+  will-change: transform;
+  animation: vfpt-drift-a 26s linear infinite;
+}
+@keyframes vfpt-drift-a { 0%, 100% { transform: translate(0, 0); } 33.33% { transform: translate(8.6vw, 8.7vh); } 66.67% { transform: translate(-3.9vw, 5.1vh); } }
+body::before {
+  width: 2px;
+  height: 2px;
+  inset: 0 auto auto 0;
+  border-radius: 50%;
+  box-shadow:
+    2.8vw 81.0vh 0 0.55px rgba(255, 107, 107, 0.58),
+    13.7vw 82.1vh 0 0.11px rgba(255, 107, 107, 0.59),
+    24.9vw 90.5vh 0 0.06px rgba(255, 107, 107, 0.53),
+    33.3vw 91.2vh 0 0.42px rgba(255, 107, 107, 0.44),
+    47.7vw 97.6vh 0 0.39px rgba(255, 107, 107, 0.63),
+    54.9vw 58.6vh 0 0.32px rgba(255, 107, 107, 0.45),
+    65.7vw 67.9vh 0 0.02px rgba(255, 107, 107, 0.58),
+    77.4vw 92.5vh 0 0.31px rgba(255, 107, 107, 0.63),
+    88.3vw 85.2vh 0 0.27px rgba(255, 107, 107, 0.52);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: vfpt-rise 13s linear 0s infinite;
+}
+body::after {
+  width: 2px;
+  height: 2px;
+  inset: 0 auto auto 0;
+  border-radius: 50%;
+  box-shadow:
+    10.1vw 96.9vh 0 0.54px rgba(255, 107, 107, 0.46),
+    19.4vw 75.4vh 0 0.32px rgba(255, 107, 107, 0.47),
+    28.4vw 76.2vh 0 0.13px rgba(255, 107, 107, 0.58),
+    38.3vw 61.5vh 0 0.43px rgba(255, 107, 107, 0.56),
+    51.1vw 88.1vh 0 0.22px rgba(255, 107, 107, 0.45),
+    62.9vw 82.2vh 0 0.39px rgba(255, 107, 107, 0.63),
+    74.3vw 72.9vh 0 0.46px rgba(255, 107, 107, 0.55),
+    83.3vw 85.1vh 0 0.19px rgba(255, 107, 107, 0.46),
+    93.6vw 87.4vh 0 0.35px rgba(255, 107, 107, 0.57);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: vfpt-rise 17.5s linear -6.4s infinite;
+}
+html::after {
+  background:
+    radial-gradient(72% 72% at 50% 42%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%) 0 0 / cover no-repeat,
+    repeating-linear-gradient(rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 4px) 0 0 / auto,
+    linear-gradient(to right, rgba(230, 0, 0, 0.13) 1px, transparent 1px) 0 0 / 160px 160px,
+    linear-gradient(to bottom, rgba(230, 0, 0, 0.13) 1px, transparent 1px) 0 0 / 160px 160px,
+    linear-gradient(to right, rgba(230, 0, 0, 0.07) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(to bottom, rgba(230, 0, 0, 0.07) 1px, transparent 1px) 0 0 / 40px 40px;
+}
+@keyframes vfpt-rise {
+  0%   { transform: translateY(0); opacity: 0; }
+  25%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateY(-130px); opacity: 0; }
+}
+/* Every loop is CSS, so these two queries are the whole of the off switch. */
+@media print {
+  html::before, body::before, body::after, html::after { animation: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html::before, body::before, body::after, html::after { animation: none !important; }
+}
+/* ── vfpt stage: end ──────────────────────────────────────────────────────── */
+
+/* Upstream's glass surfaces, without the blur: over the living stage a backdrop blur smears
+   the drift and erases the motes (the stage ruling of 2026-09-08). */
+.app-glass { -webkit-backdrop-filter: none; backdrop-filter: none; }

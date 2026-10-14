@@ -1,0 +1,23 @@
+{
+  "name": "fold-review-maps-to-ticket",
+  "why": "A run's number is its ACT's target, and the two acts target different namespaces: a resolve's is the ticket, a review's is the PR. Folding on the raw number therefore never matches for a review, which leaves the ticket showing an untouched row beside a running row whose number appears nowhere else in the queue - two rows for one concern, and the number on the live one unfindable. The review's PR resolves back to its ticket first, and the detail names both namespaces so a bare '#34' never stands for a ticket that is really a PR.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 12, "title": "Fix the header", "labels": [], "created_at": "2026-08-01T09:00:00Z"}
+        ],
+        "prs": [
+          {"number": 34, "title": "fix(#12): the header", "head": "fix/12-header", "body": "Closes #12", "checks": "green", "verdict": "awaiting", "updated_at": "2026-08-05T09:00:00Z"}
+        ],
+        "train": {}
+      }
+    ],
+    "archived": [],
+    "running": [{"repo": "acme/app", "act": "review", "number": 34}]
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "running", "detail": "review PR #34 for #12 in progress: Fix the header", "act": "watch", "number": 12, "ts": "", "stage": "in-progress", "hidden": false}
+  ]
+}

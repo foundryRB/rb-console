@@ -1,0 +1,196 @@
+{
+  "name": "verdict-reader",
+  "why": "Section 5's verdict, read from a PR's raw reviews by the one reader every surface calls: the inbox sweep, the merge helper, and any reader in another runtime. Each case gives the PR's author, the identity that would merge, and the reviews oldest first; it expects the verdict word and the index in `reviews` of the review that decided it (null when awaiting), because a re-drive over a FAIL takes that review's findings as its work order. The cases pin the vocabulary (the last token, its casing and emphasis, the one-object rule) and the three rules on who records: a review counts only from the repo's owner, a member of its organisation or a collaborator, a review by the PR's author or the merger is UNRECORDED, and UNRECORDED never outranks a counted verdict.",
+  "cases": [
+    {
+      "name": "no-review",
+      "why": "Nothing reviewed is awaiting, and no review decided it.",
+      "input": {"author": "worker", "merger": "merger", "reviews": []},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "approved-pass",
+      "why": "The authoritative record: an approving review whose last token is PASS, from a member who is neither the author nor the merger.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "Read against the ticket and the CI run.\n\nVERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 0}
+    },
+    {
+      "name": "emphasis-and-trailing-prose",
+      "why": "The token is read wherever it lands: markdown emphasis around it and prose after it change nothing. A collaborator can write to the repo, so the review counts.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "No findings.\n\n**VERDICT: PASS**\n\nCI is green on the head commit.", "author": {"login": "reviewer"}, "authorAssociation": "COLLABORATOR"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 0}
+    },
+    {
+      "name": "last-token-in-the-body",
+      "why": "A body that mentions an earlier verdict is read by its last token. An owner can write to the repo, so the review counts.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "The first read ended VERDICT: FAIL; the fix landed and the finding is gone.\n\nVERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "OWNER"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 0}
+    },
+    {
+      "name": "counted-fail-in-any-casing",
+      "why": "A request-changes review written `Verdict: FAIL` is a counted FAIL: the token is read in any casing, and this review is the work order.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "CHANGES_REQUESTED", "body": "1. The link is relative to the wrong base.\n\nVerdict: FAIL", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "fail", "decided_by": 0}
+    },
+    {
+      "name": "approval-without-a-token",
+      "why": "An approval with no verdict token is not a verdict.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "LGTM", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "pass-in-a-plain-comment",
+      "why": "One object carries both the state and the verdict: a PASS token on a commented review is not a verdict.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "COMMENTED", "body": "VERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "pass-on-a-request-changes-review",
+      "why": "A PASS counts only on an approving review; a request-changes review carrying PASS records nothing, so nothing merges on it.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "CHANGES_REQUESTED", "body": "VERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "a-later-fail-stands-over-an-earlier-pass",
+      "why": "The last counted verdict decides, whoever wrote the earlier one.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"},
+        {"state": "CHANGES_REQUESTED", "body": "1. The migration drops a column still read.\n\nVERDICT: FAIL", "author": {"login": "second"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "fail", "decided_by": 1}
+    },
+    {
+      "name": "a-later-pass-stands-over-an-earlier-fail",
+      "why": "A fresh PASS after the findings are resolved decides.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "CHANGES_REQUESTED", "body": "1. Missing test.\n\nVERDICT: FAIL", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"},
+        {"state": "APPROVED", "body": "The test is there.\n\nVERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 1}
+    },
+    {
+      "name": "no-repo-association",
+      "why": "A review counts only from the repo's owner, a member of its organisation or a collaborator: on a public repo anyone can post an approving review ending PASS, and it authorizes nothing.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "passer-by"}, "authorAssociation": "CONTRIBUTOR"}
+      ]},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "no-repo-association-under-a-counted-fail",
+      "why": "A later PASS from an author with no association to the repo takes no part, so it cannot stand over a counted FAIL.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "CHANGES_REQUESTED", "body": "1. The secret is logged.\n\nVERDICT: FAIL", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"},
+        {"state": "APPROVED", "body": "Looks fine to me.\n\nVERDICT: PASS", "author": {"login": "passer-by"}, "authorAssociation": "NONE"}
+      ]},
+      "expected": {"verdict": "fail", "decided_by": 0}
+    },
+    {
+      "name": "association-missing",
+      "why": "Fail closed: a review that carries no author association counts for nothing.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "reviewer"}}
+      ]},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "the-authors-own-pass",
+      "why": "A review by the PR's author is UNRECORDED, never PASS, whatever state the host let it carry.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "worker"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "unrecorded", "decided_by": 0}
+    },
+    {
+      "name": "the-mergers-own-fail",
+      "why": "A review by the identity that would merge is UNRECORDED, never FAIL.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "CHANGES_REQUESTED", "body": "1. A nit.\n\nVERDICT: FAIL", "author": {"login": "merger"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "unrecorded", "decided_by": 0}
+    },
+    {
+      "name": "the-authors-unrecorded",
+      "why": "The third state as section 5 defines it: the author's own analysis, posted as a commented review ending UNRECORDED.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "COMMENTED", "body": "No findings; CI green.\n\nVERDICT: UNRECORDED", "author": {"login": "worker"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "unrecorded", "decided_by": 0}
+    },
+    {
+      "name": "an-authors-reply-without-a-token",
+      "why": "Only a review bearing a token takes part: the author's reply on a review thread is not an UNRECORDED verdict.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "COMMENTED", "body": "Fixed in the next commit.", "author": {"login": "worker"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "awaiting", "decided_by": null}
+    },
+    {
+      "name": "unrecorded-never-outranks-a-counted-pass",
+      "why": "A newer review whose last token is UNRECORDED records nothing, even on an approving review, so the counted PASS before it still decides.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"},
+        {"state": "APPROVED", "body": "Read it again.\n\nVERDICT: UNRECORDED", "author": {"login": "second"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 0}
+    },
+    {
+      "name": "the-mergers-pass-after-a-counted-pass",
+      "why": "The merger's own approving PASS after an independent PASS records nothing, so the independent PASS still decides.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"},
+        {"state": "APPROVED", "body": "VERDICT: PASS", "author": {"login": "merger"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 0}
+    },
+    {
+      "name": "a-fail-on-an-approving-review",
+      "why": "A FAIL counts on an approving review as well as on a request-changes one: the token is the verdict.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "APPROVED", "body": "1. The migration drops a column.\n\nVERDICT: FAIL", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "fail", "decided_by": 0}
+    },
+    {
+      "name": "an-authors-unrecorded-quoting-fail",
+      "why": "A newer review by the author that quotes `VERDICT: FAIL` as its last token is still UNRECORDED: the counted FAIL before it decides, and its findings, not the author's, are the work order.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "CHANGES_REQUESTED", "body": "1. The retry never backs off.\n\nVerdict: FAIL", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"},
+        {"state": "COMMENTED", "body": "VERDICT: UNRECORDED\n\nThe review before this one ended `VERDICT: FAIL`, and its finding stands.", "author": {"login": "worker"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "fail", "decided_by": 0}
+    },
+    {
+      "name": "a-real-pass-supersedes-an-earlier-unrecorded",
+      "why": "UNRECORDED holds the place of an absent verdict, so a counted PASS arriving after it decides.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "COMMENTED", "body": "VERDICT: UNRECORDED", "author": {"login": "worker"}, "authorAssociation": "MEMBER"},
+        {"state": "APPROVED", "body": "Read it.\n\nVERDICT: PASS", "author": {"login": "reviewer"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "pass", "decided_by": 1}
+    },
+    {
+      "name": "the-latest-unrecorded-decides-among-them",
+      "why": "With no counted verdict, the last review that recorded nothing is the one that decided.",
+      "input": {"author": "worker", "merger": "merger", "reviews": [
+        {"state": "COMMENTED", "body": "VERDICT: UNRECORDED", "author": {"login": "worker"}, "authorAssociation": "MEMBER"},
+        {"state": "COMMENTED", "body": "No findings.\n\nVERDICT: UNRECORDED", "author": {"login": "merger"}, "authorAssociation": "MEMBER"}
+      ]},
+      "expected": {"verdict": "unrecorded", "decided_by": 1}
+    }
+  ]
+}

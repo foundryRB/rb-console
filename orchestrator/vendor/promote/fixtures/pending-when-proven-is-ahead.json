@@ -1,0 +1,28 @@
+{
+  "name": "pending-when-proven-is-ahead",
+  "why": "The base case of the line. The entry environment serves v2.1.0 and staging still carries v2.0.0 with no door open, so the target is pending and the act is a promotion. A target that has never been written carries the empty string rather than null: never-written and could-not-be-read are different answers, and only the second one is unreadable.",
+  "input": {
+    "proven": "v2.1.0",
+    "targets": [
+      {
+        "target": {"name": "staging", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "probe", "install": "chaos", "environment": "staging"},
+        "accepted": "v2.0.0",
+        "door_open": "",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "first-run", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "chaos", "environment": "qa"},
+        "accepted": "",
+        "door_open": "",
+        "acceptance_answers": null
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "staging", "state": "pending", "accepted": "v2.0.0", "door_ref": "", "detail": ""},
+      {"name": "first-run", "state": "pending", "accepted": "", "door_ref": "", "detail": ""}
+    ],
+    "queue": ["first-run", "staging"]
+  }
+}

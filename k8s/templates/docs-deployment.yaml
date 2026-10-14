@@ -1,0 +1,42 @@
+{{- if .Values.docs.enabled }}
+{{/* Per-app documentation site, served behind the central docs portal at
+     docs.<domain>/apps/<app> (ADR-018, ADR-023). The platform's docs HTTPRoute
+     (platform/teams/<app>.yaml) routes /apps/<app> to the Service beside this.
+     The image is built from docs/ by CI with base=/apps/<app> baked in. */}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-docs
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}-docs
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: docs
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}-docs
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}-docs
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: docs
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: docs
+          image: "ghcr.io/{{ .Values.githubOwner }}/{{ .Values.images.docs.name }}:{{ default .Chart.AppVersion .Values.images.docs.tag }}"
+          imagePullPolicy: {{ .Values.images.docs.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            {{- toYaml .Values.docs.resources | nindent 12 }}
+{{- end }}

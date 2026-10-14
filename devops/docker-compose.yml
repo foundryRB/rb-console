@@ -1,0 +1,36 @@
+name: foundry-console
+services:
+  foundry-console:
+    build:
+      context: ..
+      dockerfile: devops/Dockerfile
+    image: foundry-console-app:latest
+    # The install facts and the local operator (.env.example documents them).
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      FC_HOST: 127.0.0.1
+      FC_PORT: 8000
+    ports:
+      - "8000:8080"
+    volumes:
+      - foundry-console-data:/data
+    restart: unless-stopped
+  worker:
+    profiles: [worker]
+    build:
+      context: ..
+      dockerfile: devops/worker.Dockerfile
+    image: foundry-console-worker:latest
+  web:
+    build:
+      context: ..
+      dockerfile: devops/web.Dockerfile
+    image: foundry-console-web:latest
+    network_mode: service:foundry-console
+    depends_on:
+      - foundry-console
+    restart: unless-stopped
+volumes:
+  foundry-console-data:

@@ -1,0 +1,28 @@
+{
+  "name": "in-flight-outranks-the-version",
+  "why": "A door already submitted outranks the version comparison. Both targets are behind the proven release, but the pair has an open promote/v2.1.0 pull request, so it reads in-flight rather than pending: something is already moving, and opening a second door is not the next act. The door reference is carried through so a surface can name what it is waiting on rather than saying only that it waits.",
+  "input": {
+    "proven": "v2.1.0",
+    "targets": [
+      {
+        "target": {"name": "partner", "kind": "repository", "door": "pull-request", "terms": "source", "acceptance": "none", "repo": "acme/portal", "branch": "main", "credential": "acme-portal-push"},
+        "accepted": "v2.0.0",
+        "door_open": "promote/v2.1.0",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "staging", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "chaos", "environment": "staging"},
+        "accepted": "v2.0.0",
+        "door_open": "",
+        "acceptance_answers": null
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "partner", "state": "in-flight", "accepted": "v2.0.0", "door_ref": "promote/v2.1.0", "detail": ""},
+      {"name": "staging", "state": "pending", "accepted": "v2.0.0", "door_ref": "", "detail": ""}
+    ],
+    "queue": ["partner", "staging"]
+  }
+}

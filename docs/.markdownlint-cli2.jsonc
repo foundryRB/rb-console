@@ -1,0 +1,18 @@
+{
+    // markdownlint-cli2 ran on defaults, which meant MD013 (80-column lines) against a
+    // corpus written one-line-per-paragraph from its first page. That is a deliberate
+    // authoring style, not a backlog: an edit to a sentence produces a one-line diff
+    // instead of reflowing a whole paragraph, which is what keeps a docs review readable.
+    // The result was 529 of 532 errors being the linter disagreeing with the house style,
+    // and the three REAL defects buried underneath - a dead link fragment, a trailing
+    // space, and a wrapped em-dash that markdown was rendering as a stray bullet. A gate
+    // nobody can read is a gate nobody runs, which is why this one had been red for its
+    // whole life and never made it into CI.
+    //
+    // So MD013 is off, deliberately, and every other rule stays on and stays green.
+    // Rendered line length is the browser's job here: Starlight sets the measure.
+    // Rules only - the lint:md script owns which files are linted.
+    "config": {
+        "MD013": false
+    }
+}

@@ -1,0 +1,92 @@
+# The app's identity and permissions. foundry-console reads and writes its own
+# runtime config (the driver ConfigMap + per-run credential Secrets) at request time,
+# and, once a live drive is enabled, submits and watches Workflows. All namespace
+# scoped: a Role, never cluster reach.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+rules:
+  # Runtime driver config and per-run credentials: a ConfigMap and Secrets the app
+  # reads, writes, AND deletes at request time (deleting a saved agent removes its
+  # ConfigMap + Secret), so a change is live with no restart.
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  # The compiled delivery Workflows the orchestrator submits, watches, and controls.
+  # patch + the status subresource back the Runs controls: stop/terminate patch
+  # spec.shutdown, and resume flips a suspended node via workflows/status (no Argo
+  # server/CLI is deployed, so the Console drives the Workflow CR directly).
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflows", "workflows/status"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
+  # Read the step pods' logs for the Runs surface (pod-prefixed run logs).
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}
+---
+# The worker ServiceAccount that the executor runs each phase's pod as (the compiler
+# pins it as the Workflow's serviceAccountName). It needs only the Argo executor
+# permissions: report task results and read its own pod. Git and the MCP doors are
+# reached over the network with the credentials the pod is handed, not via Kubernetes.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+{{- with .Values.imagePullSecrets }}
+imagePullSecrets:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflowtaskresults"]
+    verbs: ["create", "patch", "get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-worker
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-worker

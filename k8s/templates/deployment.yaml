@@ -1,0 +1,268 @@
+# `Recreate` is mandatory: the run-log snapshots are files on the /data volume, a
+# ReadWriteOnce claim, so a rolling update that ran two pods against it could race on writes.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+spec:
+  replicas: {{ if .Values.paused }}0{{ else }}1{{ end }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "foundry-console.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        # env vars from envFrom are read only at container start, so roll the
+        # pod whenever the rendered ConfigMap changes.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "foundry-console.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Release.Name }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.events.enabled }}
+      initContainers:
+        # A NATS client reads one credentials file; the grant delivers its two halves as
+        # two Secrets, because reflecting them together would have carried the private
+        # seed out of this namespace. Assembling them here keeps that boundary and costs
+        # one short init step. Uses the app's own image so the pod pulls nothing extra.
+        - name: assemble-nats-creds
+          image: "ghcr.io/{{ .Values.githubOwner }}/{{ .Values.images.app.name }}:{{ default .Chart.AppVersion .Values.images.app.tag }}"
+          imagePullPolicy: {{ .Values.images.app.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              # Built line by line rather than with one printf: a credentials file is
+              # framed text, and $(cat ...) normalises whatever trailing newline each
+              # Secret happens to carry.
+              {
+                echo '-----BEGIN NATS USER JWT-----'
+                echo "$(cat /jwt/user.jwt)"
+                echo '------END NATS USER JWT------'
+                echo
+                echo '-----BEGIN USER NKEY SEED-----'
+                echo "$(cat /seed/seed)"
+                echo '------END USER NKEY SEED------'
+              } > /out/app.creds
+              chmod 400 /out/app.creds
+              echo "assembled the bus credentials"
+          volumeMounts:
+            - { name: nats-seed, mountPath: /seed, readOnly: true }
+            - { name: nats-jwt, mountPath: /jwt, readOnly: true }
+            - { name: nats-creds, mountPath: /out }
+      {{- end }}
+      containers:
+        - name: foundry-console
+          image: "ghcr.io/{{ .Values.githubOwner }}/{{ .Values.images.app.name }}:{{ default .Chart.AppVersion .Values.images.app.tag }}"
+          imagePullPolicy: {{ .Values.images.app.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: FC_HOST
+              value: "127.0.0.1"
+            - name: FC_OIDC_ISSUER
+              value: {{ .Values.auth.oidc.issuer | quote }}
+            - name: FC_PROXY_SECRET
+              {{- if or .Values.auth.oidc.enabled .Values.auth.proxySecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default .Values.auth.oidc.existingSecret .Values.auth.proxySecret }}
+                  key: {{ .Values.auth.proxySecretKey }}
+              {{- else }}
+              value: ""
+              {{- end }}
+            # Whether the app is fronted by the oauth2-proxy sidecar below, so Settings
+            # can offer Sign out only where a session exists to end. Rendered from the
+            # same value that decides whether the sidecar is there at all, so the control
+            # and the gate cannot drift apart.
+            - name: FC_OIDC_ENABLED
+              value: {{ .Values.auth.oidc.enabled | quote }}
+            # The admin group: with OIDC on and a group named, teams scope every other
+            # signed-in user to their teams' projects.
+            - name: FC_ADMIN_GROUP
+              value: {{ .Values.auth.teams.adminGroup | quote }}
+            {{- with .Values.auth.execution }}
+            {{- if .enabled }}
+            # The execution door's caller (INT-FC-R173). The token is optional so a Secret not
+            # yet seated leaves the door refusing rather than the console unable to start.
+            - name: FC_EXECUTION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "set auth.execution.existingSecret" .existingSecret }}
+                  key: {{ .tokenKey }}
+                  optional: true
+            - name: FC_EXECUTION_PRINCIPAL
+              value: {{ required "set auth.execution.principal" .principal | quote }}
+            - name: FC_EXECUTION_REPOSITORIES
+              value: {{ required "set auth.execution.repositories" .repositories | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.events.enabled }}
+            - name: FC_NATS_SERVERS
+              value: {{ .Values.events.servers | quote }}
+            - name: FC_NATS_CREDS
+              value: /var/run/nats/app.creds
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            {{- with .Values.auth.existingSecret }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            {{- if .Values.events.enabled }}
+            - name: nats-creds
+              mountPath: /var/run/nats
+              readOnly: true
+            {{- end }}
+          # The two probes ask different questions and so point at different endpoints.
+          # Readiness asks "can this pod serve a fleet read": /api/ready is 503 until the
+          # lifespan's first refresh tick has completed, so the Service routes nothing
+          # here while the caches are cold (INT-FC-R125). A readiness failure only holds
+          # traffic off, it never restarts, so a slow first scan costs latency and not a
+          # crash loop. Liveness keeps the trivial always-ok /api/health and must NOT gain
+          # the dependency: a liveness probe that failed on a cold dependency would turn a
+          # slow start into exactly that crash loop. The backend binds loopback, so the
+          # kubelet reads readiness through the web tier's port, and liveness asks the
+          # backend itself from inside its container.
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5).read()"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        - name: web
+          image: "ghcr.io/{{ .Values.githubOwner }}/{{ .Values.images.web.name }}:{{ default .Chart.AppVersion .Values.images.web.tag }}"
+          imagePullPolicy: {{ .Values.images.web.pullPolicy }}
+          ports:
+            - name: web
+              containerPort: 8080
+            {{- if .Values.auth.execution.enabled }}
+            - name: execution
+              containerPort: 8081
+            {{- end }}
+          env:
+            - name: CONSOLE_BIND
+              value: "0.0.0.0"
+            - name: CONSOLE_PROXY_SECRET
+              {{- if or .Values.auth.oidc.enabled .Values.auth.proxySecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default .Values.auth.oidc.existingSecret .Values.auth.proxySecret }}
+                  key: {{ .Values.auth.proxySecretKey }}
+              {{- else }}
+              value: ""
+              {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /web-health
+              port: web
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /web-health
+              port: web
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+        {{- if .Values.auth.oidc.enabled }}
+        # oauth2-proxy: the OIDC gate for the whole app. It authenticates against this
+        # app's Keycloak realm and reverse-proxies to the web tier on localhost:8080. Client
+        # + cookie secret come from the app-owned keycloak-foundry-console Secret; absent
+        # it, the proxy crash-loops and the Service (which targets this container) has no
+        # ready endpoint, so the app fails closed. (There is no agent-driver /mcp door to
+        # bypass: foundry-console is driven from its cockpit, not over MCP.)
+        - name: oauth2-proxy
+          image: "{{ .Values.auth.oidc.image.repository }}:{{ .Values.auth.oidc.image.tag }}"
+          args:
+            - --http-address=0.0.0.0:4180
+            - --upstream=http://127.0.0.1:8080
+            - --provider=oidc
+            - --oidc-issuer-url={{ .Values.auth.oidc.issuer }}
+            - --client-id={{ .Values.auth.oidc.clientId }}
+            - --email-domain={{ .Values.auth.oidc.emailDomains | quote }}
+            - --redirect-url=https://{{ .Values.host }}/oauth2/callback
+            - --cookie-secure=true
+            - --cookie-samesite=lax
+            # The SPA fires several requests in parallel on first load; each unauthenticated
+            # one 302s and, with a single shared CSRF cookie, overwrites the last - so the
+            # callback fails CSRF (a 403) and only the SECOND login attempt lands. One CSRF
+            # cookie per in-flight request is the canonical fix.
+            - --cookie-csrf-per-request=true
+            - --cookie-csrf-expire=5m
+            - --pass-user-headers=true
+            - --skip-auth-strip-headers=false
+            - --reverse-proxy=true
+            - --skip-provider-button=true
+          env:
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.oidc.existingSecret }}
+                  key: clientSecret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.oidc.existingSecret }}
+                  key: cookieSecret
+          ports:
+            - name: oidc
+              containerPort: 4180
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: oidc
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: oidc
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.auth.oidc.resources | nindent 12 }}
+        {{- end }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
+        {{- if .Values.events.enabled }}
+        # Neither Secret is optional: a missing grant holds the pod at
+        # CreateContainerConfigError, where the absent Secret is named, rather than
+        # starting it with an empty credentials file that drops every publish silently.
+        - name: nats-seed
+          secret:
+            secretName: {{ required "set events.seedSecret" .Values.events.seedSecret }}
+        - name: nats-jwt
+          secret:
+            secretName: {{ required "set events.jwtSecret" .Values.events.jwtSecret }}
+        - name: nats-creds
+          emptyDir: {}
+        {{- end }}

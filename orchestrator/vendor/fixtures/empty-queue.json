@@ -1,0 +1,17 @@
+{
+  "name": "empty-queue",
+  "why": "An empty inbox is a result, not an error. A repo with nothing open derives no rows at all rather than a placeholder, so a reader that renders the queue can say 'nothing needs me' honestly.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/quiet",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "green", "version": "v2.0.0", "healthy": true, "deployed": "v2.0.0"}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": []
+}

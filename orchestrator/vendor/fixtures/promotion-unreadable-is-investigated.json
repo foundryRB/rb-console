@@ -1,0 +1,97 @@
+{
+  "name": "promotion-unreadable-is-investigated",
+  "why": "A target whose state could not be read is a promotion row whose act is investigate: unseen is reported as unseen, never as current, so it raises a row rather than dropping out of the queue the way a current target does. It ranks after a target that claims to serve and does not, and ahead of a door in flight and a release that has not moved (REF-Promotion section 6). The targets are declared in an order unlike the queue's, so a reader that merely preserved declaration order fails here.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/widget",
+        "issues": [],
+        "prs": [],
+        "train": {
+          "checks": "green",
+          "version": "v1.42.0",
+          "healthy": true,
+          "deployed": "v1.42.0"
+        },
+        "promotion": [
+          {
+            "target": "example-prod",
+            "destination": "example / prod",
+            "state": "pending",
+            "accepted": "1.39.2",
+            "proven": "1.42.0",
+            "door_ref": ""
+          },
+          {
+            "target": "partner",
+            "destination": "their-org/their-repo / main",
+            "state": "in-flight",
+            "accepted": "1.38.0",
+            "proven": "1.42.0",
+            "door_ref": "PR 14"
+          },
+          {
+            "target": "example-uat",
+            "destination": "example / uat",
+            "state": "unreadable",
+            "accepted": "",
+            "proven": "1.42.0",
+            "door_ref": ""
+          },
+          {
+            "target": "example-qa",
+            "destination": "example / qa",
+            "state": "unproven",
+            "accepted": "1.42.0",
+            "proven": "1.42.0",
+            "door_ref": ""
+          }
+        ]
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {
+      "repo": "acme/widget",
+      "signal": "drift",
+      "detail": "example / qa serves 1.42.0 and does not answer",
+      "act": "investigate",
+      "number": null,
+      "ts": "",
+      "stage": "unproven",
+      "hidden": false
+    },
+    {
+      "repo": "acme/widget",
+      "signal": "promotion",
+      "detail": "example / uat could not be read",
+      "act": "investigate",
+      "number": null,
+      "ts": "",
+      "stage": "unreadable",
+      "hidden": false
+    },
+    {
+      "repo": "acme/widget",
+      "signal": "promotion",
+      "detail": "their-org/their-repo / main: PR 14 awaits their review",
+      "act": "watch",
+      "number": null,
+      "ts": "",
+      "stage": "in-flight",
+      "hidden": false
+    },
+    {
+      "repo": "acme/widget",
+      "signal": "promotion",
+      "detail": "example / prod carries 1.39.2, 1.42.0 is proven",
+      "act": "promote",
+      "number": null,
+      "ts": "",
+      "stage": "pending",
+      "hidden": false
+    }
+  ]
+}

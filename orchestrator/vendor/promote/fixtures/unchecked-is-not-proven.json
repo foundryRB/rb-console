@@ -1,0 +1,28 @@
+{
+  "name": "unchecked-is-not-proven",
+  "why": "The rule the line turns on. Both targets carry the proven release, and the difference is whether anything looked. `watched` declares a probe that could not be read, so it is unreadable: reporting it current would claim what nothing saw. `closes-at-deployed` declares no acceptance at all, so carrying the release IS the whole promotion and it is current. A surface that treats a missing answer as a passing one is the anti-pattern this case exists to catch.",
+  "input": {
+    "proven": "v2.1.0",
+    "targets": [
+      {
+        "target": {"name": "watched", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "probe", "install": "chaos", "environment": "staging"},
+        "accepted": "v2.1.0",
+        "door_open": "",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "closes-at-deployed", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "chaos", "environment": "qa"},
+        "accepted": "v2.1.0",
+        "door_open": "",
+        "acceptance_answers": null
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "watched", "state": "unreadable", "accepted": "v2.1.0", "door_ref": "", "detail": "serves v2.1.0, and its declared probe could not be read"},
+      {"name": "closes-at-deployed", "state": "current", "accepted": "v2.1.0", "door_ref": "", "detail": ""}
+    ],
+    "queue": ["watched"]
+  }
+}

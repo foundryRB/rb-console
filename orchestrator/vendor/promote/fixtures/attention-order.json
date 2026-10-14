@@ -1,0 +1,56 @@
+{
+  "name": "attention-order",
+  "why": "The order IS the contract, so one case carries all five states at once. Something claiming to serve and not answering (unproven) outranks a state nobody could read, which outranks a door someone else may be sitting on, which outranks a release that has simply not moved yet. A target carrying the proven release leaves the queue entirely: current is not work. Ties inside one state break by target name, so a dock over a dozen targets stays stable between reads. The targets are declared in an order deliberately unlike the queue's, so a surface that merely preserved declaration order fails here.",
+  "input": {
+    "proven": "v3.0.0",
+    "targets": [
+      {
+        "target": {"name": "alpha-pending", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "chaos", "environment": "staging"},
+        "accepted": "v2.9.0",
+        "door_open": "",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "beta-current", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "chaos", "environment": "qa"},
+        "accepted": "v3.0.0",
+        "door_open": "",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "delta-in-flight", "kind": "repository", "door": "pull-request", "terms": "source", "acceptance": "none", "repo": "acme/portal", "branch": "main"},
+        "accepted": "v2.9.0",
+        "door_open": "promote/v3.0.0",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "echo-unreadable", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "example", "environment": "staging"},
+        "accepted": null,
+        "door_open": "",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "charlie-unproven", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "probe", "install": "example", "environment": "qa"},
+        "accepted": "v3.0.0",
+        "door_open": "",
+        "acceptance_answers": false
+      },
+      {
+        "target": {"name": "abel-pending", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "example", "environment": "sandbox"},
+        "accepted": "v2.8.0",
+        "door_open": "",
+        "acceptance_answers": null
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "alpha-pending", "state": "pending", "accepted": "v2.9.0", "door_ref": "", "detail": ""},
+      {"name": "beta-current", "state": "current", "accepted": "v3.0.0", "door_ref": "", "detail": ""},
+      {"name": "delta-in-flight", "state": "in-flight", "accepted": "v2.9.0", "door_ref": "promote/v3.0.0", "detail": ""},
+      {"name": "echo-unreadable", "state": "unreadable", "accepted": "", "door_ref": "", "detail": "the target's state could not be read"},
+      {"name": "charlie-unproven", "state": "unproven", "accepted": "v3.0.0", "door_ref": "", "detail": "serves v3.0.0, and its declared probe does not answer"},
+      {"name": "abel-pending", "state": "pending", "accepted": "v2.8.0", "door_ref": "", "detail": ""}
+    ],
+    "queue": ["charlie-unproven", "echo-unreadable", "delta-in-flight", "abel-pending", "alpha-pending"]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "_comment": "The single home for the vendored playbook pin. update-vendored-helpers.sh writes this file; check_pin_drift.py and tests/test_vendor_pin.py read it. Never hand-edit either this or the vendored files - a hand-edit is a re-implementation wearing a pin's clothes (REF-Delivery anti-pattern 30).",
+  "repo": "VFPT-VODAFONE-FOUNDRY/adf-playbook",
+  "ref": "6724335bfcd22dcd3e5eb4e7958a42e8caf227a7",
+  "pinned_on": "2026-10-05",
+  "sources": {
+    "galaxies/foundry/skills/deliver-engagement": {
+      "into": "devops/vendor",
+      "baked": true,
+      "files": {
+        "establish_scratch.py": "f61ec93cc14c2c7e1bdb0015a5f86291fc51fa983569dfd89eae6752a373b0a6",
+        "reach_gate.py": "e8704e474d3876168f042db1ae038b211c319a08733326c7df004bafdf6225b6",
+        "stamp_gate.py": "793086222bb141e3645a027d1bce6e5c06271ea198bb1b921a8f576b5543bde6",
+        "lifecycle.json": "afe2e7848f5ed723130db98ee3a42743dfb4a5b806a2951273c6e7e83c1001f1",
+        "artifact-handlers.json": "e55903087ea864af9de623418a3d6a54165b0a5b58d8b577513fc8580e8389f2"
+      }
+    },
+    "galaxies/foundry/skills/maintenance-inbox": {
+      "into": "orchestrator/vendor",
+      "baked": false,
+      "files": {
+        "sweep.py": "ad4bc43eae797461f08add04c0c40836b44dca402e0fa92f71cab9b58bfc3c6d",
+        "fixtures/README.md": "4083b9aabb46297141076bf810c7d9a9ab291b2c29786d3e404406885bf0ec9f",
+        "fixtures/empty-queue.json": "c162d915630948dbe7c2c75c3abaa5d8fe30f9c78a36323f0cc9f0f2597fa381",
+        "fixtures/fold-pr-into-issue.json": "f31155a574bf0dfdb5d8d4058bfbf25aeed735475999c898e5d0ba90c5219109",
+        "fixtures/fold-review-maps-to-ticket.json": "96cced7ac778e857f518a9101ec4920389bbabc2082f3d7ee770aa982b2224b9",
+        "fixtures/fold-run-over-ticket.json": "9b41690679e4f9204a8377a865d4418487b5baeedfcccdb58e361ee42a231030",
+        "fixtures/hidden-and-archived.json": "d091185a5c8d31f7295041e74a77fa91ebe17d507a43f4dc62f656e1ffb7318e",
+        "fixtures/issue-stages.json": "acc828bbf1533aac4a2c62066b6a587d6ba4309dae529c49671b7f48e78ae222",
+        "fixtures/promotion-joins-the-queue.json": "aecf2eefc4904992db143a74e9db14e7f770e1d59d8af38f63eeb5a8141e6be4",
+        "fixtures/promotion-unreadable-is-investigated.json": "66b7b8a986a23fd2e00fa9db338dde3101f5558986713520ba2c8fe849534c4b",
+        "fixtures/ties-break-by-codepoint.json": "abcc5f0edcee1aeeff2627611ecfb934a191df03b2eb227a0b0721aa4683625e",
+        "fixtures/train-pending-and-nothing-to-cut.json": "fb78a36d50d618cee38e0a2fa354a43ad994c3556e248b768cf1a00d13853140",
+        "fixtures/unchecked-is-not-healthy.json": "a775080d1691decd84eb019d514811b4b08496bb0c3720935feab584fdeb87d8",
+        "fixtures/unlinked-pr-keeps-its-row.json": "b622bc7f0b4457f8800f2d46e0a37e74e2bd7db9c2019ed0a3e6821500950539",
+        "fixtures/urgency-order.json": "ebadc86ae7c6eccc2182b137922d4f91ba3404a11bb8234dea1a9b88bc8e497c",
+        "fixtures/verdict-unrecorded.json": "2f49fb8fcdcc163dc31581d67fafea18d4ee30b4c85cb22d7da8f58d8e77faef",
+        "fixtures/verdict/verdict-reader.json": "9343a5fd4995caf5b19fe956b86cfff623d920e8ecfca2ad7456b8e530599cad"
+      }
+    },
+    "galaxies/foundry/skills/promote": {
+      "into": "orchestrator/vendor/promote",
+      "baked": false,
+      "files": {
+        "fixtures/README.md": "22c9868b8aa4040e0fdcf4b0068368b843be2be8591e518244e9d795fa7c40c2",
+        "fixtures/attention-order.json": "9a349c49f37b88b1b29e246f60b1cd265cc106d203c1adea8c445843b9decf2c",
+        "fixtures/door-shut-outranks-every-other-rule.json": "21c54a79dd3afc6b85b8c315a8ae4b8c2994f8fd44eba730cce48c00b7f09b98",
+        "fixtures/in-flight-outranks-the-version.json": "25a7b3fe5d3f41660c34d23c6f1f6f8aa2edcfe1b6cef1ed908897c6cc776576",
+        "fixtures/no-targets-declared.json": "2de85955e7a6c0c6239aa9846cf39b21376091a62c2da02cd7d7924b2f7e74a0",
+        "fixtures/pending-when-proven-is-ahead.json": "27ccec4d4d52578af2014c0420148cd752f7be17af67e3d15b0af731eb203b1e",
+        "fixtures/unchecked-is-not-proven.json": "db41022d7311e22b1285787493e6efa03b1fa01a05f46c5c500279b4655d8524",
+        "fixtures/unproven-when-the-signal-says-no.json": "e4b8c101e3ca409baab2c75803116ba19bb85a9fc32e1d096290fa64e0a7ac90",
+        "fixtures/unreadable-is-not-current.json": "6f57fbbaf921392a86ae886000675a8264460e1641753972cebaf530259df9d1"
+      }
+    }
+  },
+  "runtime_bundle": {
+    "file": "playbook.tar.gz",
+    "sha256": "8c6a41c12ba858f932720f6866aa8ae6a012c186b30a37c888966e69ddcb29b1",
+    "files": 314
+  }
+}

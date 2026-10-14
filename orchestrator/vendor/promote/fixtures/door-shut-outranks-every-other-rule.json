@@ -1,0 +1,37 @@
+{
+  "name": "door-shut-outranks-every-other-rule",
+  "why": "A door that cannot be performed at all is judged BEFORE anything else, and the reason travels with the row. The first target carries the proven release and closes at deployed, so every other rule would call it current; the second has a door standing open, which normally outranks the version comparison. Both are unreadable, because a surface that cannot open the door could not read the target through it either - every input beneath is an absence produced by that one cause, and reporting a version comparison over a door nobody can perform names a promotion as the next act when no promotion is possible. Without this case a target whose credential the platform does not hold renders exactly like one that works, which is what shipped: nothing tried, so nothing differed. The reason is the SURFACE's to supply and its wording is its own (a cockpit asks the platform's credential registry, a desk asks whether its authenticated client reaches the pair at all); what is fixed here is the state it derives to, the sentence the reason is composed into, and the precedence. Only a repository target can be shut - an environment target is written by a commit to a deploy branch we already hold, so nothing was granted to us and nothing can be missing.",
+  "input": {
+    "proven": "v2.1.0",
+    "targets": [
+      {
+        "target": {"name": "acme-portal", "kind": "repository", "door": "pull-request", "terms": "source", "acceptance": "none", "repo": "acme/portal", "branch": "main", "credential": "acme-portal-push"},
+        "accepted": "v2.1.0",
+        "door_open": "",
+        "acceptance_answers": null,
+        "door_shut": "the platform holds no credential named acme-portal-push"
+      },
+      {
+        "target": {"name": "acme-labs", "kind": "repository", "door": "pull-request", "terms": "source", "acceptance": "none", "repo": "acme/labs", "branch": "main", "credential": "acme-labs-push"},
+        "accepted": null,
+        "door_open": "promote/v2.1.0",
+        "acceptance_answers": null,
+        "door_shut": "the platform holds no credential named acme-labs-push"
+      },
+      {
+        "target": {"name": "example-prod", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "example", "environment": "prod"},
+        "accepted": "v2.1.0",
+        "door_open": "",
+        "acceptance_answers": null
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "acme-portal", "state": "unreadable", "accepted": "", "door_ref": "", "detail": "the door cannot be opened: the platform holds no credential named acme-portal-push"},
+      {"name": "acme-labs", "state": "unreadable", "accepted": "", "door_ref": "", "detail": "the door cannot be opened: the platform holds no credential named acme-labs-push"},
+      {"name": "example-prod", "state": "current", "accepted": "v2.1.0", "door_ref": "", "detail": ""}
+    ],
+    "queue": ["acme-labs", "acme-portal"]
+  }
+}

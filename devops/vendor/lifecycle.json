@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "id": "foundry-delivery",
+  "version": "1.0.0",
+  "phases": [
+    {
+      "id": "scope",
+      "label": "Scope",
+      "skill": "deliver-engagement",
+      "agent": "architect",
+      "record": "proposal.md",
+      "gate": "proposal",
+      "question": "What is asked, and what would it cost?",
+      "studio": "estimatekit",
+      "completion": "record",
+      "inputs": [],
+      "artifact": "proposal",
+      "tool": "the estimation engine (`REF-Estimation.md`)"
+    },
+    {
+      "id": "design",
+      "label": "Design",
+      "skill": "design-session",
+      "agent": "designer",
+      "record": "design.md",
+      "gate": "design",
+      "question": "What should it look and feel like?",
+      "studio": "protopane",
+      "completion": "record",
+      "inputs": [
+        "scope"
+      ],
+      "artifact": "design",
+      "tool": "the prototyping hub (`REF-Design.md`)"
+    },
+    {
+      "id": "intent+plan",
+      "label": "Intent + plan",
+      "skill": "intent-session",
+      "agent": "planner",
+      "record": "handoff.md",
+      "gate": "plan",
+      "question": "What must be true, and how do we build it?",
+      "studio": "",
+      "completion": "record",
+      "inputs": [
+        "design"
+      ],
+      "artifact": "handoff",
+      "tool": "CSD intent authoring (`REF-CSD.md`)"
+    },
+    {
+      "id": "build+ship",
+      "label": "Build + ship",
+      "skill": "run-delivery-plan",
+      "agent": "builder",
+      "record": "build.md",
+      "gate": "delivery",
+      "question": "Is it working software, and is it live?",
+      "studio": "platform-studio",
+      "completion": "record",
+      "inputs": [
+        "intent+plan"
+      ],
+      "artifact": "build",
+      "tool": "the platform (`REF-AppContract.md`)"
+    },
+    {
+      "id": "learn",
+      "label": "Learn",
+      "skill": "reconcile-delivery",
+      "agent": "librarian",
+      "record": "journal.md",
+      "gate": null,
+      "question": "What did it teach, and what comes next?",
+      "studio": "playbook-studio",
+      "completion": "journal",
+      "inputs": [
+        "build+ship"
+      ],
+      "artifact": null,
+      "tool": "the playbook (`REF-Authoring.md`)"
+    }
+  ]
+}

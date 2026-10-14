@@ -1,0 +1,47 @@
+{
+  "name": "hidden-and-archived",
+  "why": "Archived repos appear in no signal: a tombstone's open issues are noise by definition, whether the position says so itself or the caller passes the repo in as already gone. A foundry-hidden mark is a different thing and takes a different treatment - the row stays in the queue carrying its mark, so a reader can hold it back and still say how many it is holding. Dropping it outright would make a deliberate choice look like a loss. The mark has two scopes and they must not be confused: the LABEL hides one ticket, so its repo's other rows are untouched; the TOPIC hides a whole repo, so EVERY signal it raises is marked - red CI and unreleased commits included, not its tickets alone. A reader that carried the topic to the issue rows alone would leave a repo it was told to hide still shouting about its red default branch.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 1, "title": "Ordinary ticket", "labels": ["bug"], "created_at": "2026-08-01T00:00:00Z"},
+          {"number": 2, "title": "Switched to a delivery line", "labels": ["foundry-delivery-scale", "foundry-hidden"], "created_at": "2026-08-02T00:00:00Z"}
+        ],
+        "prs": [],
+        "train": {"checks": "red", "version": "v1.4.0"}
+      },
+      {
+        "repo": "acme/ci",
+        "issues": [{"number": 5, "title": "A ticket on a hidden repo", "labels": [], "created_at": "2026-08-03T00:00:00Z"}],
+        "prs": [],
+        "train": {"checks": "red", "version": "v2.0.0", "next_version": "v2.0.1", "unreleased_total": 3}
+      },
+      {
+        "repo": "acme/retired",
+        "archived": true,
+        "issues": [{"number": 99, "title": "Noise from a tombstone", "labels": [], "created_at": "2026-01-01T00:00:00Z"}],
+        "prs": [],
+        "train": {"checks": "red", "version": "v0.9.0"}
+      },
+      {
+        "repo": "acme/stale-position",
+        "issues": [{"number": 98, "title": "A position that outlived its repo", "labels": [], "created_at": "2026-01-01T00:00:00Z"}],
+        "prs": [],
+        "train": {}
+      }
+    ],
+    "archived": ["acme/stale-position"],
+    "hidden_repos": ["acme/ci"],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "red-ci", "detail": "default branch is red at v1.4.0: what merged is not shipping", "act": "investigate", "number": null, "ts": "", "stage": "", "hidden": false},
+    {"repo": "acme/ci", "signal": "red-ci", "detail": "default branch is red at v2.0.0: what merged is not shipping", "act": "investigate", "number": null, "ts": "", "stage": "", "hidden": true},
+    {"repo": "acme/ci", "signal": "unreleased", "detail": "3 unreleased commit(s); next would cut v2.0.1", "act": "release", "number": null, "ts": "", "stage": "", "hidden": true},
+    {"repo": "acme/app", "signal": "issue", "detail": "#1 Ordinary ticket", "act": "resolve", "number": 1, "ts": "2026-08-01T00:00:00Z", "stage": "open", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#2 Switched to a delivery line", "act": "resolve", "number": 2, "ts": "2026-08-02T00:00:00Z", "stage": "open", "hidden": true},
+    {"repo": "acme/ci", "signal": "issue", "detail": "#5 A ticket on a hidden repo", "act": "resolve", "number": 5, "ts": "2026-08-03T00:00:00Z", "stage": "open", "hidden": true}
+  ]
+}

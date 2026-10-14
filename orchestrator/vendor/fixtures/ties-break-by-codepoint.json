@@ -1,0 +1,107 @@
+{
+  "name": "ties-break-by-codepoint",
+  "why": "Within one signal, rows run by repo name and then by number, and one repo's promotion rows in one state run by target name; every name is compared code point by code point, so an upper-case letter sorts before every lower-case one and nothing is folded or read through a locale. acme/Zeta's unreleased row leads acme/alpha's, and on acme/widget the pending target UAT leads partner. A reader that compared names by locale would swap both pairs, and one that ordered the targets by their destinations would swap the second pair: the destinations sort the other way round.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/alpha",
+        "issues": [],
+        "prs": [],
+        "train": {
+          "checks": "green",
+          "version": "v1.0.0",
+          "healthy": null,
+          "deployed": "",
+          "unreleased_total": 1,
+          "next_version": "v1.0.1"
+        }
+      },
+      {
+        "repo": "acme/Zeta",
+        "issues": [],
+        "prs": [],
+        "train": {
+          "checks": "green",
+          "version": "v2.0.0",
+          "healthy": null,
+          "deployed": "",
+          "unreleased_total": 2,
+          "next_version": "v2.1.0"
+        }
+      },
+      {
+        "repo": "acme/widget",
+        "issues": [],
+        "prs": [],
+        "train": {
+          "checks": "green",
+          "version": "v1.42.0",
+          "healthy": true,
+          "deployed": "v1.42.0"
+        },
+        "promotion": [
+          {
+            "target": "partner",
+            "destination": "example / partner",
+            "state": "pending",
+            "accepted": "1.38.0",
+            "proven": "1.42.0",
+            "door_ref": ""
+          },
+          {
+            "target": "UAT",
+            "destination": "example / uat",
+            "state": "pending",
+            "accepted": "1.40.0",
+            "proven": "1.42.0",
+            "door_ref": ""
+          }
+        ]
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {
+      "repo": "acme/Zeta",
+      "signal": "unreleased",
+      "detail": "2 unreleased commit(s); next would cut v2.1.0",
+      "act": "release",
+      "number": null,
+      "ts": "",
+      "stage": "",
+      "hidden": false
+    },
+    {
+      "repo": "acme/alpha",
+      "signal": "unreleased",
+      "detail": "1 unreleased commit(s); next would cut v1.0.1",
+      "act": "release",
+      "number": null,
+      "ts": "",
+      "stage": "",
+      "hidden": false
+    },
+    {
+      "repo": "acme/widget",
+      "signal": "promotion",
+      "detail": "example / uat carries 1.40.0, 1.42.0 is proven",
+      "act": "promote",
+      "number": null,
+      "ts": "",
+      "stage": "pending",
+      "hidden": false
+    },
+    {
+      "repo": "acme/widget",
+      "signal": "promotion",
+      "detail": "example / partner carries 1.38.0, 1.42.0 is proven",
+      "act": "promote",
+      "number": null,
+      "ts": "",
+      "stage": "pending",
+      "hidden": false
+    }
+  ]
+}

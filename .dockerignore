@@ -1,0 +1,9 @@
+.git
+**/node_modules
+**/dist
+**/__pycache__
+**/.pytest_cache
+**/.venv
+frontend/playwright-report
+frontend/test-results
+docs/.astro

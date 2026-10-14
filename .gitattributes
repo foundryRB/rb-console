@@ -1,0 +1,23 @@
+# Files whose identity IS their exact bytes, held to LF in the working tree on every
+# platform. Git stores them LF and, with core.autocrlf on (the Windows default), hands
+# the checkout CRLF - so the bytes a Windows clone reads are not the bytes the repo
+# holds, and anything that hashes or executes them reads a different file than CI does.
+#
+# The vendored delivery helpers are pinned by SHA-256 (devops/vendor/PINNED.json): the
+# pin is byte-exact by design, which is what makes a hand-edit detectable at all
+# (INT-FC-R112). Translated on checkout, every hash misses and the guard reports the
+# drift it exists to detect on a tree that has none - a false alarm whose own advice
+# (re-pin) would record the translated bytes and break the pin for everyone else.
+#
+# Shell scripts carry a shebang: a CRLF line ending makes the kernel look for an
+# interpreter named `bash\r`, so a script checked out on Windows fails to run both
+# locally and, if it reaches an image build from that clone, inside the container.
+*.sh                    text eol=lf
+devops/vendor/*         text eol=lf
+orchestrator/vendor/**  text eol=lf
+# Redundant against the line above, and stated anyway: the pin guard asserts LF per
+# DESTINATION, so a new vendored source that forgot this is caught rather than silently
+# relying on an ancestor pattern somebody may narrow later.
+orchestrator/vendor/promote/**  text eol=lf
+
+devops/vendor/*.tar.gz -text

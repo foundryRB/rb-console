@@ -1,0 +1,25 @@
+{
+  "name": "fold-pr-into-issue",
+  "why": "Fold 2: a PR that resolves a still-open ticket IS that ticket's concern, so it surfaces once as the issue row rather than as an issue and a PR. The issue row then carries the act the PR's own row would have offered - merge on a PASS - so nothing is lost by folding. PR #40 resolves nothing, so it keeps its own row: the fold is per concern, not a blanket suppression of pull requests.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 7, "title": "Portal links are absolute", "labels": [], "created_at": "2026-08-01T09:00:00Z"}
+        ],
+        "prs": [
+          {"number": 9, "title": "fix(#7): relative links under the portal base", "head": "fix/7-portal-links", "body": "Closes #7", "checks": "green", "verdict": "pass", "updated_at": "2026-08-06T09:00:00Z"},
+          {"number": 40, "title": "chore: unrelated housekeeping", "head": "chore/housekeeping", "body": "", "checks": "green", "verdict": "awaiting", "updated_at": "2026-08-07T09:00:00Z"}
+        ],
+        "train": {}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "pr-review", "detail": "PR #40 awaits review: chore: unrelated housekeeping", "act": "review", "number": 40, "ts": "2026-08-07T09:00:00Z", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#7 Portal links are absolute", "act": "merge", "number": 7, "ts": "2026-08-01T09:00:00Z", "stage": "awaiting-merge", "hidden": false}
+  ]
+}

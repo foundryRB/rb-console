@@ -1,0 +1,26 @@
+{
+  "name": "unlinked-pr-keeps-its-row",
+  "why": "The link rule is branch AND text (section 2), and both halves are load-bearing here. PR #20's branch 'release/7-rc' matches the branch half by accident and its text mentions no ticket; PR #21 mentions #7 in prose but branches nowhere near it. Neither resolves #7, so neither folds: each keeps its own row and #7 still reads as open with no PR. A one-sided rule would swallow both into the ticket and report a ticket under way that nobody is working.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 7, "title": "Still has no PR", "labels": [], "created_at": "2026-08-01T00:00:00Z"}
+        ],
+        "prs": [
+          {"number": 20, "title": "chore: cut the release candidate", "head": "release/7-rc", "body": "Routine RC.", "checks": "green", "verdict": "awaiting", "updated_at": "2026-08-08T00:00:00Z"},
+          {"number": 21, "title": "chore: tidy the imports", "head": "chore/imports", "body": "Noticed while reading #7, unrelated to it.", "checks": "green", "verdict": "awaiting", "updated_at": "2026-08-09T00:00:00Z"}
+        ],
+        "train": {}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "pr-review", "detail": "PR #20 awaits review: chore: cut the release candidate", "act": "review", "number": 20, "ts": "2026-08-08T00:00:00Z", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "pr-review", "detail": "PR #21 awaits review: chore: tidy the imports", "act": "review", "number": 21, "ts": "2026-08-09T00:00:00Z", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#7 Still has no PR", "act": "resolve", "number": 7, "ts": "2026-08-01T00:00:00Z", "stage": "open", "hidden": false}
+  ]
+}

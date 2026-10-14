@@ -1,0 +1,12 @@
+{
+  "name": "no-targets-declared",
+  "why": "An app whose contract declares no target has an empty queue, and an empty queue is a different answer from a contract that could not be read. This case pins only the first: given no targets, a surface derives nothing rather than inventing a destination. What a surface must NOT do is show this state and one for a missing contract as the same thing, which is a rendering rule rather than a derivation one and belongs to the surface.",
+  "input": {
+    "proven": "v1.0.0",
+    "targets": []
+  },
+  "expected": {
+    "positions": [],
+    "queue": []
+  }
+}

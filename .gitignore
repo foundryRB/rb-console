@@ -1,0 +1,40 @@
+# Node / web app
+node_modules/
+dist/
+build/
+.vite/
+*.local
+.env
+.env.*
+!.env.example
+
+# Real secret env files under k8s/secrets/ (applied out of band). The .example
+# templates stay tracked; the filled-in secrets, e.g. keycloak-<app>.env, never are.
+k8s/secrets/*.env
+!k8s/secrets/*.env.example
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# .delivery/ is the delivery scratch's worktree mount point, ignored on this branch.
+# Per REF-Delivery (decision 0003), the scratch is committed on the line's own
+# delivery/<line-id> ref - never here - so a cancelled run still resumes from a fresh
+# clone, and progress is derived from which records exist on that ref (no status file).
+.delivery/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Python build artifacts
+*.egg-info/

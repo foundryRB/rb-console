@@ -1,0 +1,27 @@
+# foundry-console CI: a thin caller of the platform's reusable build workflow
+# (ADR-019). The build logic lives once in VFPT-VODAFONE-FOUNDRY/adf-ci; this
+# only points at it, so it cannot drift. Runs on the in-cluster ARC dind runners: it
+# derives a SemVer from Conventional Commits (ADR-024) and pushes the app image
+# (devops/Dockerfile via devops/docker-compose.yml), the Helm chart (k8s/), and the
+# docs site (docs/Dockerfile) to GHCR. Build-and-push only; no deploy (promotion is
+# ADR-022).
+#
+# No `with:` inputs: every foundry-console value matches the reusable workflow's
+# defaults, all derived from the repo name `foundry-console` -- image
+# `foundry-console`, docs base `/apps/foundry-console` (the portal mounts it there),
+# runner `arc-dind`.
+name: build
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    uses: VFPT-VODAFONE-FOUNDRY/adf-ci/.github/workflows/build.yml@main
+    with:
+      app-name: foundry-console
+    permissions:
+      contents: write
+      packages: write
+    secrets: inherit

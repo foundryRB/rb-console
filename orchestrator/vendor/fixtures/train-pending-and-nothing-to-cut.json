@@ -1,0 +1,31 @@
+{
+  "name": "train-pending-and-nothing-to-cut",
+  "why": "The two silences a train read produces on purpose, pinned so a reader cannot mistake either for a signal it forgot to read. acme/quiet has a run still in progress on its default branch and one docs commit past its tag: pending is not red, and a tail that would cut no release is not unreleased work (release is not an act anyone can take on a docs commit), so it raises nothing. acme/nocheck has no checks at all, which reads unknown rather than a green it never earned, and raises nothing either. acme/ready is the contrast: a green branch with a tail the train would cut is exactly one unreleased row. A train that could not be read at all is not in any position; the sweep reports it beside the queue as unchecked, by signal, and these three were read.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/quiet",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "pending", "version": "v2.1.2", "healthy": null, "deployed": "", "unreleased_total": 1, "next_version": ""}
+      },
+      {
+        "repo": "acme/nocheck",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "unknown", "version": "v0.1.0", "healthy": null, "deployed": "", "unreleased_total": 0, "next_version": ""}
+      },
+      {
+        "repo": "acme/ready",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "green", "version": "v2.1.2", "healthy": null, "deployed": "", "unreleased_total": 2, "next_version": "v2.2.0"}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/ready", "signal": "unreleased", "detail": "2 unreleased commit(s); next would cut v2.2.0", "act": "release", "number": null, "ts": "", "stage": "", "hidden": false}
+  ]
+}

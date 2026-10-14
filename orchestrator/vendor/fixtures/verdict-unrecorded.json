@@ -1,0 +1,25 @@
+{
+  "name": "verdict-unrecorded",
+  "why": "Section 5's third verdict state in the queue. `unrecorded` is a review that happened and could not be recorded, because the reviewing identity was the PR's author or the merger - the ordinary case for a loop driven from a terminal. It is NOT a failure, so #1's ticket sits at `awaiting-review`/`review` exactly as an unreviewed one does, never at `changes-requested`/`resolve`; and it is NOT a merge, so the unlinked PR #201 still raises a `pr-review` row rather than dropping out of the queue. Only the wording differs, to say the PR needs an INDEPENDENT reviewer rather than a first one.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 1, "title": "Its PR was reviewed unrecordably", "labels": [], "created_at": "2026-08-01T00:00:00Z"}
+        ],
+        "prs": [
+          {"number": 101, "title": "fix(#1): the thing", "head": "fix/1-thing", "body": "Closes #1", "checks": "green", "verdict": "unrecorded", "updated_at": "2026-08-10T00:00:00Z"},
+          {"number": 201, "title": "chore: no ticket", "head": "chore/tidy", "body": "", "checks": "green", "verdict": "unrecorded", "updated_at": "2026-08-11T00:00:00Z"}
+        ],
+        "train": {}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "pr-review", "detail": "PR #201 awaits an independent reviewer: chore: no ticket", "act": "review", "number": 201, "ts": "2026-08-11T00:00:00Z", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#1 Its PR was reviewed unrecordably", "act": "review", "number": 1, "ts": "2026-08-01T00:00:00Z", "stage": "awaiting-review", "hidden": false}
+  ]
+}

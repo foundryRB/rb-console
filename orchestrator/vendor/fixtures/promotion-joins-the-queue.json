@@ -1,0 +1,87 @@
+{
+ "name": "promotion-joins-the-queue",
+ "why": "Promotion is not a second inbox: a target that has not received the proven release is work sitting unshipped and reads beside `unreleased`, while a target that carries the release and does not answer is a deployment that does not answer, which this queue already calls drift. A reader that holds no contracts omits the key and derives no promotion rows.",
+ "input": {
+  "positions": [
+   {
+    "repo": "acme/widget",
+    "issues": [],
+    "prs": [],
+    "train": {
+     "checks": "green",
+     "version": "v1.42.0",
+     "healthy": true,
+     "deployed": "v1.42.0"
+    },
+    "promotion": [
+     {
+      "target": "example-prod",
+      "destination": "example / prod",
+      "state": "pending",
+      "accepted": "1.39.2",
+      "proven": "1.42.0",
+      "door_ref": ""
+     },
+     {
+      "target": "partner",
+      "destination": "their-org/their-repo / main",
+      "state": "in-flight",
+      "accepted": "1.38.0",
+      "proven": "1.42.0",
+      "door_ref": "PR 14"
+     },
+     {
+      "target": "chaos-staging",
+      "destination": "chaos / staging",
+      "state": "unproven",
+      "accepted": "1.42.0",
+      "proven": "1.42.0",
+      "door_ref": ""
+     },
+     {
+      "target": "quiet",
+      "destination": "example / uat",
+      "state": "current",
+      "accepted": "1.42.0",
+      "proven": "1.42.0",
+      "door_ref": ""
+     }
+    ]
+   }
+  ],
+  "archived": [],
+  "running": []
+ },
+ "expected": [
+  {
+   "repo": "acme/widget",
+   "signal": "drift",
+   "detail": "chaos / staging serves 1.42.0 and does not answer",
+   "act": "investigate",
+   "number": null,
+   "ts": "",
+   "stage": "unproven",
+   "hidden": false
+  },
+  {
+   "repo": "acme/widget",
+   "signal": "promotion",
+   "detail": "their-org/their-repo / main: PR 14 awaits their review",
+   "act": "watch",
+   "number": null,
+   "ts": "",
+   "stage": "in-flight",
+   "hidden": false
+  },
+  {
+   "repo": "acme/widget",
+   "signal": "promotion",
+   "detail": "example / prod carries 1.39.2, 1.42.0 is proven",
+   "act": "promote",
+   "number": null,
+   "ts": "",
+   "stage": "pending",
+   "hidden": false
+  }
+ ]
+}

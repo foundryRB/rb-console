@@ -1,0 +1,31 @@
+{
+  "name": "urgency-order",
+  "why": "The attention order IS the contract (REF-Maintenance section 7): work in flight leads so a reader does not put a second worker on it, then what is broken, then what waits on a human, then what merged but never shipped, then what a proven release has not reached, then open intent. A queue with the right rows in the wrong order is a queue that buries the urgent one.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 1, "title": "Broken link in the portal", "labels": [], "created_at": "2026-08-01T09:00:00Z"},
+          {"number": 2, "title": "Second thing", "labels": [], "created_at": "2026-08-02T09:00:00Z"}
+        ],
+        "prs": [
+          {"number": 10, "title": "chore: bump the pins", "head": "chore/pins", "body": "", "checks": "red", "verdict": "awaiting", "updated_at": "2026-08-03T09:00:00Z"},
+          {"number": 11, "title": "feat: the new panel", "head": "feat/panel", "body": "", "checks": "green", "verdict": "awaiting", "updated_at": "2026-08-04T09:00:00Z"}
+        ],
+        "train": {"checks": "red", "version": "v1.2.0", "healthy": false, "deployed": "abc1234", "next_version": "v1.3.0", "unreleased_total": 4}
+      }
+    ],
+    "archived": [],
+    "running": [{"repo": "acme/app", "act": "resolve", "number": 1}]
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "running", "detail": "resolve #1 in progress: Broken link in the portal", "act": "watch", "number": 1, "ts": "", "stage": "in-progress", "hidden": false},
+    {"repo": "acme/app", "signal": "red-ci", "detail": "default branch is red at v1.2.0: what merged is not shipping", "act": "investigate", "number": null, "ts": "", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "red-ci", "detail": "PR #10 checks red: chore: bump the pins", "act": "investigate", "number": 10, "ts": "2026-08-03T09:00:00Z", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "drift", "detail": "deployment unhealthy at abc1234", "act": "investigate", "number": null, "ts": "", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "pr-review", "detail": "PR #11 awaits review: feat: the new panel", "act": "review", "number": 11, "ts": "2026-08-04T09:00:00Z", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "unreleased", "detail": "4 unreleased commit(s); next would cut v1.3.0", "act": "release", "number": null, "ts": "", "stage": "", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#2 Second thing", "act": "resolve", "number": 2, "ts": "2026-08-02T09:00:00Z", "stage": "open", "hidden": false}
+  ]
+}

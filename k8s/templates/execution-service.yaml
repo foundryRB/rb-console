@@ -1,0 +1,18 @@
+{{- if .Values.auth.execution.enabled }}
+# The execution door's address (INT-FC-R173): in-cluster only. The HTTPRoute names the main
+# Service alone, so this port never exists outside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-execution
+  labels:
+    {{- include "foundry-console.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "foundry-console.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: execution
+      port: 8081
+      targetPort: execution
+{{- end }}

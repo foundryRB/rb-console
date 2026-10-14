@@ -1,0 +1,111 @@
+---
+title: MODULE NAME
+id: DOC-MODULE-XXX
+type: Module
+status: Active
+updated: "YYYY-MM-DD"
+summary: ONE SENTENCE, what this module is responsible for
+tableOfContents: false
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+{/* MODULE TEMPLATE (one bounded context of the application: its low-level design). Required structure (enforced
+    by the STARLIGHT bundle): intro prose before the first section (INT-STARLIGHT-007), at least one level-2 heading
+    (INT-STARLIGHT-008), the three viewpoints Business, Functional and Technical as tabs or level-2 headings, and the
+    domain model drawn inside a Mermaid fence as a classDiagram or erDiagram (INT-STARLIGHT-012), a Failure modes
+    heading and a Claims realised heading (INT-STARLIGHT-014). Every claim id cited under Claims realised, one
+    `INT-...` per row, is an active claim in the application's intent.yaml (INT-STARLIGHT-015; the STARLIGHT bundle's
+    README, under "What INT-STARLIGHT-015 reads", states where that file is found). The why lives in the decisions collection, never here (INT-STARLIGHT-013); the page
+    describes the target as the only state it has. A tabbed page carries `tableOfContents: false` (REF-StarlightDocs
+    section 5). Replace every UPPERCASE placeholder. One diagram per concept: draw what has structure, annotate it
+    with prose, and keep reference as tables. */}
+
+ONE PARAGRAPH: what this module owns, who uses it, and how it sits among the other modules.
+
+<Tabs syncKey="viewpoint">
+
+<TabItem label="Business">
+
+### What it is
+
+THE MODULE IN THE DOMAIN'S OWN WORDS: the things it manages and the outcomes it serves.
+
+### Rules
+
+THE BUSINESS RULES THE MODULE ENFORCES, each as one sentence a domain expert would sign.
+
+</TabItem>
+
+<TabItem label="Functional">
+
+### What a user does
+
+EACH ACTION THE MODULE OFFERS, as the user experiences it, in the order a user meets them.
+
+### What the user sees
+
+THE STATES, LISTS AND MESSAGES THE MODULE RENDERS; link each flow this module takes part in.
+
+</TabItem>
+
+<TabItem label="Technical">
+
+### Domain model
+
+```mermaid
+classDiagram
+  %% the aggregate root, its entities, value objects and enums, with relationships and multiplicity
+  class Root {
+    +id
+  }
+```
+
+ANNOTATION: the invariants the diagram cannot show, one line each.
+
+### Lifecycle
+
+```mermaid
+stateDiagram-v2
+  %% only when the module has a state machine: the states and the allowed transitions
+  [*] --> created
+```
+
+### Ports and adapters
+
+```mermaid
+flowchart LR
+  %% this module's own topology: its inbound ports and adapters, its use cases, its outbound ports and adapters
+  in["inbound port"] --> uc["use case"] --> out["outbound port"]
+```
+
+### HTTP surface
+
+| Method | Route | Purpose |
+|---|---|---|
+| VERB | PATH | ONE LINE |
+
+### Persistence
+
+THE TABLES OR COLLECTIONS THIS MODULE OWNS, drawn inside a Mermaid fence as an erDiagram when there is more than one.
+
+### Failure modes
+
+| Failure | What the caller sees |
+|---|---|
+| HOW THE MODULE FAILS | THE ERROR, STATUS OR STATE ITS CALLER GETS |
+
+### Claims realised
+
+| Claim | Realised by |
+|---|---|
+| THE CLAIM ID | THE PART OF THIS MODULE THAT REALISES IT |
+
+</TabItem>
+
+</Tabs>
+
+## Read next
+
+- [A FLOW THIS MODULE TAKES PART IN](PATH)
+- [A NEIGHBOURING MODULE](PATH)

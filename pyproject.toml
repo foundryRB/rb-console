@@ -1,0 +1,37 @@
+[project]
+name = "foundry-console"
+version = "0.1.0"
+description = "The Foundry Console orchestrator: the deterministic core that derives a delivery's state from its committed .delivery/ scratch."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic>=2",
+    "PyYAML>=6",
+    # The event bus client, with the nkeys extra the platform's signed credential
+    # needs. Imported lazily inside the publisher's worker, so a console with no bus
+    # grant never touches it.
+    "nats-py[nkeys]>=2.6",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    # starlette's TestClient (used by tests/test_http.py) now hard-requires httpx2; its httpx
+    # fallback is only a deprecation warning locally but a collection error on CI's newer
+    # starlette. Test-only - the runtime image (fastapi/uvicorn/pydantic) is unaffected.
+    "httpx2",
+    "csd-pytest-intent~=0.3.0",
+    "csd-intent>=0.6.0,<0.7",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["orchestrator*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

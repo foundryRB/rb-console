@@ -1,0 +1,34 @@
+{
+  "name": "issue-stages",
+  "why": "A ticket's stage is its linked PR's state folded onto it, with the act that actually moves it, so a ticket sitting at a gate or awaiting a merge stops reading as plain untouched 'resolve' work. All five stages, each with its act: open/resolve, checks-red/investigate, awaiting-merge/merge, changes-requested/resolve (section 5: the findings are the work order), awaiting-review/review. Note that #2's red PR raises no red-ci row of its own - fold 2 already carries that concern as the ticket, and the stage is where the red shows.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/app",
+        "issues": [
+          {"number": 1, "title": "No PR yet", "labels": [], "created_at": "2026-08-01T00:00:00Z"},
+          {"number": 2, "title": "Its PR is red", "labels": [], "created_at": "2026-08-02T00:00:00Z"},
+          {"number": 3, "title": "Its PR passed", "labels": [], "created_at": "2026-08-03T00:00:00Z"},
+          {"number": 4, "title": "Its PR failed review", "labels": [], "created_at": "2026-08-04T00:00:00Z"},
+          {"number": 5, "title": "Its PR awaits a verdict", "labels": [], "created_at": "2026-08-05T00:00:00Z"}
+        ],
+        "prs": [
+          {"number": 102, "title": "fix(#2): the thing", "head": "fix/2-thing", "body": "Closes #2", "checks": "red", "verdict": "awaiting", "updated_at": "2026-08-10T00:00:00Z"},
+          {"number": 103, "title": "fix(#3): the thing", "head": "fix/3-thing", "body": "Closes #3", "checks": "green", "verdict": "pass", "updated_at": "2026-08-10T00:00:00Z"},
+          {"number": 104, "title": "fix(#4): the thing", "head": "fix/4-thing", "body": "Closes #4", "checks": "green", "verdict": "fail", "updated_at": "2026-08-10T00:00:00Z"},
+          {"number": 105, "title": "fix(#5): the thing", "head": "fix/5-thing", "body": "Closes #5", "checks": "green", "verdict": "awaiting", "updated_at": "2026-08-10T00:00:00Z"}
+        ],
+        "train": {}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/app", "signal": "issue", "detail": "#1 No PR yet", "act": "resolve", "number": 1, "ts": "2026-08-01T00:00:00Z", "stage": "open", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#2 Its PR is red", "act": "investigate", "number": 2, "ts": "2026-08-02T00:00:00Z", "stage": "checks-red", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#3 Its PR passed", "act": "merge", "number": 3, "ts": "2026-08-03T00:00:00Z", "stage": "awaiting-merge", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#4 Its PR failed review", "act": "resolve", "number": 4, "ts": "2026-08-04T00:00:00Z", "stage": "changes-requested", "hidden": false},
+    {"repo": "acme/app", "signal": "issue", "detail": "#5 Its PR awaits a verdict", "act": "review", "number": 5, "ts": "2026-08-05T00:00:00Z", "stage": "awaiting-review", "hidden": false}
+  ]
+}

@@ -1,0 +1,157 @@
+# The GitHub organization that owns this install's images and repositories, lower-cased for
+# the GHCR path. Owner-as-a-value (REF-AppContract section 1): the owner is one install fact,
+# set per-install on the deploy-<install> branch, never baked into each image's default
+# `repository:` path where it would silently render a second install against the first org's
+# registry. Empty in the source chart so no default carries one org; the running install
+# supplies it. This mirrors the app's own FC_ORG, which fails loud at start when unset.
+githubOwner: ""
+
+# Four released images (REF-AppContract section 4, the multi-image binding): app, web,
+# worker and docs. Component tags live at images.<component>.tag. The
+# registry owner is NOT baked into each repository default; the templates compose the path from
+# githubOwner above, so the owner lives in exactly one value.
+images:
+  worker:
+    name: foundry-console-worker
+    tag: ""
+  web:
+    name: foundry-console-web
+    tag: ""
+    pullPolicy: Always
+  app:
+    name: foundry-console-app
+    tag: ""
+    pullPolicy: Always
+  docs:
+    name: foundry-console-docs
+    tag: ""
+    pullPolicy: Always
+
+# Pause switch: apps ship running. The platform scales the app to zero by
+# overriding this to true on the app's ArgoCD Application (docs stay up).
+paused: false
+
+# Materialized in-namespace by foundry-platform. Set to [] when the GHCR package
+# is public (ADR-015).
+imagePullSecrets:
+  - name: ghcr-pull
+
+host: foundry-console.vodafone-foundry.com
+
+# Per-team Gateway created by foundry-platform (platform/teams/foundry-console.yaml).
+gateway:
+  name: foundry-console
+  namespace: network
+
+persistence:
+  size: 1Gi
+  # storageClassName: local-path  # k3s default; uncomment to pin
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 512Mi
+  limits:
+    memory: 512Mi
+
+# OIDC authenticates the browser through oauth2-proxy, which forwards to the web
+# tier. The web tier forwards API requests to the pod-local backend with trusted
+# identity provenance. The app realm admits operators through its existing-user
+# allowlist; self-registration is disabled.
+# Local development requires an explicit operator and loopback access.
+auth:
+  proxySecret: ""
+  proxySecretKey: cookieSecret
+  existingSecret: ""
+  # The execution door (INT-FC-R173): an in-cluster Service for one machine caller (the
+  # benchmark), which presents a bearer token for the delivery-execution operations alone,
+  # on the repositories named here (`owner/prefix*` allowed, under the installation's own
+  # owner). The Gateway never routes it. The
+  # token is a key of an existing Secret seated out of band; while it is absent or empty the
+  # door refuses every request and the rest of the console runs unchanged.
+  execution:
+    enabled: false
+    existingSecret: ""
+    tokenKey: token
+    principal: ""
+    repositories: ""
+  # Teams: the identity-provider group whose members are the console's admins. With
+  # OIDC on and this set, every other signed-in user sees and acts on the projects
+  # assigned to their teams alone; each team is a group, set up in Settings. The realm
+  # must put the user's groups in the token. Empty, every signed-in user is an admin.
+  teams:
+    adminGroup: ""
+  oidc:
+    enabled: true
+    issuer: https://keycloak.vodafone-foundry.com/realms/foundry-console
+    clientId: foundry-console
+    emailDomains: "*"
+    # Client secret + cookie secret; minted in-cluster in this namespace by the
+    # platform grant's generate-if-absent Job (gen-keycloak-foundry-console, ADR-034) and
+    # reflected into the identity namespace for realm provisioning. Nothing to apply.
+    existingSecret: keycloak-foundry-console
+    image:
+      repository: quay.io/oauth2-proxy/oauth2-proxy
+      tag: v7.7.1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 64Mi
+
+# The shared event bus (foundry-platform ADR-041, REF-Events). Off by default: a
+# console whose install holds no bus grant states its facts to the log instead, and
+# every act completes exactly as it would with a broker up, which is the one-way rule
+# rather than a fallback (ADR-038). The two Secrets are what the grant produced
+# (foundry-onboard-events): `nats-foundry-console` (key `seed`) is the keypair this
+# console's own generator minted in its namespace and never reflected anywhere;
+# `nats-jwt-foundry-console` (key `user.jwt`) is the user JWT the platform signed for
+# its public half and reflected back. The deployment assembles the two into the one
+# credentials file a NATS client reads. `servers` is the bus's in-cluster address; it
+# has no public one. To adopt the grant, flip `enabled` and change nothing else.
+events:
+  enabled: false
+  servers: nats://nats.messaging.svc.cluster.local:4222
+  seedSecret: nats-foundry-console
+  jwtSecret: nats-jwt-foundry-console
+
+# Non-secret app configuration. Rendered into a ConfigMap; loaded via envFrom.
+config:
+  # Install facts with NO default (REF-AppContract section 1): the GitHub owner this console
+  # acts under, and the worker image the compiler stamps into every Argo worker pod. Empty in
+  # the source chart on purpose, so the owner never leaks one install's org into another's; each
+  # install sets them on its deploy-<install> branch (FC_ORG canonical-cased for GitHub,
+  # FC_WORKER_IMAGE the full ghcr.io/<owner>/foundry-console-worker:<tag> reference). Left empty,
+  # the orchestrator fails loud at start naming the missing key rather than running wrongly.
+  FC_ORG: ""
+  FC_WORKER_IMAGE: ""
+  # Activate the in-cluster stores: driver config and per-run credentials persist to
+  # a ConfigMap and Secrets via the app's ServiceAccount (hot-applied, survives a
+  # restart). FC_LIVE gates only the stores, so on its own it spawns nothing.
+  FC_LIVE: "1"
+  # The live DRIVE path (spawning real Argo Workflows and workers) is the separate
+  # FC_DRIVE_LIVE guard. The worker image has shipped, and prod turns the drive on by
+  # setting FC_DRIVE_LIVE: "1" in the deploy branch's prod/values.yaml. It is left out
+  # of the chart default on purpose, so spawning stays a deliberate per-environment
+  # opt-in and not something every consumer of this chart inherits. Reading this chart
+  # alone therefore understates prod: the drive is live there via that override.
+
+# Per-app docs site served behind the central portal at docs.<domain>/apps/<app>
+# (ADR-018). Built from docs/ by CI with base baked in; this just runs the image.
+docs:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 64Mi
+
+web:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      memory: 64Mi

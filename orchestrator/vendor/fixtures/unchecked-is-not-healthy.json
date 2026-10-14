@@ -1,0 +1,32 @@
+{
+  "name": "unchecked-is-not-healthy",
+  "why": "A signal whose source could not answer is not a signal that came back clean. acme/watched has a reader and reports unhealthy, so it raises a drift row; acme/unwatched has no reader at all, so its health is null and it raises nothing here - the caller reports that gap as unchecked beside the queue rather than letting an absent row pass for a healthy one. The two repos also pin the tie-break: within one signal, rows order by repo and then by number, so a queue over a floor of sixty stays stable between sweeps.",
+  "input": {
+    "positions": [
+      {
+        "repo": "acme/watched",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "green", "version": "v3.1.0", "healthy": false, "deployed": "v3.0.0"}
+      },
+      {
+        "repo": "acme/unwatched",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "green", "version": "v1.0.0", "healthy": null, "deployed": ""}
+      },
+      {
+        "repo": "acme/behind",
+        "issues": [],
+        "prs": [],
+        "train": {"checks": "green", "version": "v2.0.0", "healthy": true, "deployed": "v2.0.0", "next_version": "v2.1.0", "unreleased_total": 3}
+      }
+    ],
+    "archived": [],
+    "running": []
+  },
+  "expected": [
+    {"repo": "acme/watched", "signal": "drift", "detail": "deployment unhealthy at v3.0.0", "act": "investigate", "number": null, "ts": "", "stage": "", "hidden": false},
+    {"repo": "acme/behind", "signal": "unreleased", "detail": "3 unreleased commit(s); next would cut v2.1.0", "act": "release", "number": null, "ts": "", "stage": "", "hidden": false}
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "unproven-when-the-signal-says-no",
+  "why": "A target carrying the release whose declared acceptance answers NO is unproven, which is the loudest state on the line: something claims to serve the proven release and its own signal disagrees. It outranks every other kind of attention, so it heads the queue even where a door has been open longer. The detail names what was read, because 'unproven' alone does not tell the operator which signal refused.",
+  "input": {
+    "proven": "v2.1.0",
+    "targets": [
+      {
+        "target": {"name": "in-flight-elsewhere", "kind": "repository", "door": "pull-request", "terms": "source", "acceptance": "none", "repo": "acme/portal", "branch": "main"},
+        "accepted": "v2.0.0",
+        "door_open": "promote/v2.1.0",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "serving-badly", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "suite", "install": "chaos", "environment": "staging"},
+        "accepted": "v2.1.0",
+        "door_open": "",
+        "acceptance_answers": false
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "in-flight-elsewhere", "state": "in-flight", "accepted": "v2.0.0", "door_ref": "promote/v2.1.0", "detail": ""},
+      {"name": "serving-badly", "state": "unproven", "accepted": "v2.1.0", "door_ref": "", "detail": "serves v2.1.0, and its declared suite does not answer"}
+    ],
+    "queue": ["serving-badly", "in-flight-elsewhere"]
+  }
+}

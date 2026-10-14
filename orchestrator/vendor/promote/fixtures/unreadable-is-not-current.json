@@ -1,0 +1,28 @@
+{
+  "name": "unreadable-is-not-current",
+  "why": "A target whose own state could not be read is unreadable, and it stays unreadable even where a door is open: an in-flight door tells you something is moving, and it does not tell you what the target carries underneath. The empty accepted string on an unreadable row is deliberate, so a surface prints nothing there rather than printing a version it never read.",
+  "input": {
+    "proven": "v2.1.0",
+    "targets": [
+      {
+        "target": {"name": "no-branch", "kind": "environment", "door": "commit", "terms": "version", "acceptance": "none", "install": "example", "environment": "staging"},
+        "accepted": null,
+        "door_open": "",
+        "acceptance_answers": null
+      },
+      {
+        "target": {"name": "no-branch-door-open", "kind": "repository", "door": "pull-request", "terms": "source", "acceptance": "none", "repo": "acme/portal", "branch": "main"},
+        "accepted": null,
+        "door_open": "promote/v2.1.0",
+        "acceptance_answers": null
+      }
+    ]
+  },
+  "expected": {
+    "positions": [
+      {"name": "no-branch", "state": "unreadable", "accepted": "", "door_ref": "", "detail": "the target's state could not be read"},
+      {"name": "no-branch-door-open", "state": "unreadable", "accepted": "", "door_ref": "promote/v2.1.0", "detail": "the target's state could not be read"}
+    ],
+    "queue": ["no-branch", "no-branch-door-open"]
+  }
+}

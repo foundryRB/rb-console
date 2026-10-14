@@ -1,0 +1,8 @@
+src/models/
+dist/
+node_modules/
+
+src/components/ui
+src/App.tsx
+src/main.tsx
+src/monaco.ts

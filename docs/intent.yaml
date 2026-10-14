@@ -1,0 +1,209 @@
+# Intent claims for this Starlight docs site (CSD-INTENT-01 canonical schema).
+# Standard frontmatter claims from the STARLIGHT bundle; attested by
+# tests/starlight.test.ts (vitest-intent). Audit with: csd-intent docs
+# (or `csd-intent .` from within this directory).
+
+# --- bundle: STARLIGHT v0.1.0 ---
+INT-STARLIGHT-001:
+  version: 1.0.0
+  status: active
+  statement: Every doc page MUST have a non-empty `title` frontmatter field.
+  rationale: Starlight uses title for nav, page heading, and OG metadata; missing title yields broken UI.
+  test:
+    scope: unit
+    component: ContentCollection
+    type: invariant
+  criticality: critical
+INT-STARLIGHT-002:
+  version: 1.0.0
+  status: active
+  statement: Every doc page MUST have a non-empty `id` frontmatter field.
+  rationale: Stable per-doc identifier for cross-linking and navigation; required by the content collection schema.
+  test:
+    scope: unit
+    component: ContentCollection
+    type: invariant
+  criticality: critical
+INT-STARLIGHT-003:
+  version: 1.0.0
+  status: active
+  statement: Doc page `id` values MUST be unique across the entire docs collection.
+  rationale: Duplicate IDs break cross-link resolution and content-collection queries.
+  test:
+    scope: integration
+    component: ContentCollection
+    type: invariant
+  criticality: critical
+
+# --- bundle: STARLIGHT v0.2.0 (applied 2026-07-04T00:52:26+00:00) ---
+INT-STARLIGHT-007:
+  statement: Every doc page MUST open with non-empty introductory prose before its first level-2 heading. A single leading navigation line or bold-only line before the prose is allowed; what matters is that some non-empty, non-heading prose exists before the first level-2 heading.
+  rationale: "A page that jumps straight into sections gives the reader no orientation; a short intro states what the page is and how its parts fit before the first `## ` heading."
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'invariant'}
+INT-STARLIGHT-008:
+  statement: Every doc page MUST contain at least one level-2 heading.
+  rationale: Level-2 headings are the page's sections; a page with none is an undifferentiated wall of text with no nav anchors or scannable structure.
+  criticality: medium
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'invariant'}
+INT-STARLIGHT-009:
+  statement: "A page with `type: Flow` MUST contain a Mermaid `sequenceDiagram` and a steps section (a level-2 heading named Steps OR an ordered list)."
+  rationale: A Flow tells a dynamic story; the sequence diagram is the picture and the steps are the narration. One without the other is half a flow.
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'contract'}
+INT-STARLIGHT-010:
+  statement: "A page with `type: Guide` MUST contain a numbered procedure: an ordered list OR at least two headings that begin with a number (for example `## 1. ...`)."
+  rationale: A Guide is a how-to; the reader needs ordered steps to follow, expressed either as an ordered list or as numbered section headings.
+  criticality: medium
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'contract'}
+
+# --- v3: the Maintenance mode's docs home (REQ-M8, .delivery/proposal.md) ---
+# Draft with the plan; the build flips it to active as its test lands.
+
+INT-FC-DOCS-001:
+  version: 2.0.0
+  status: active
+  derived_from: [REQ-M8]
+  statement: "The docs MUST carry the maintenance mode on the maintenance module page: the ticket loop with its three ceremony modes (gated, one-shot, direct) and the verdict gate, the maintenance derived-state read, and that a console Merge executes under the console-role git identity (no shared or default account) while the press is the operator's OIDC-gated act."
+  rationale: "docs/ is the design's durable home (REQ-M8), and the merge-identity statement is the single-pane requirement the operator asked to see written plainly."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: contract
+  criticality: high
+
+INT-FC-DOCS-002:
+  version: 1.0.0
+  status: active
+  derived_from: [REQ-M8]
+  statement: "The docs MUST document the ticket-marker conventions the Maintenance view reads: a dedicated page names both markers (Complexity and Priority) with their vocabularies (low/medium/high; lowest/low/medium/high/highest), the two accepted body shapes (a GitHub Issue-Form field block and a hand-typed trailer line), and the org-wide rollout via a public .github default-community-health-files repository."
+  rationale: "The signals are invisible on a clean repo (no label defines them), so the convention the author must follow to be understood, and the one template that ships it fleet-wide, only exist if the docs write them down (REQ-M8: docs/ is the design's durable home)."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: contract
+  criticality: high
+
+
+# --- bundle: STARLIGHT v0.5.0 (applied 2026-10-08T07:39:48+00:00) ---
+INT-STARLIGHT-004:
+  statement: Every doc page MUST have a `type` frontmatter field with value in {Overview, Guide, Standard, Reference, Template, Intent, Flow, Module}.
+  rationale: Type drives nav grouping and template selection; unknown values produce orphan pages. Template and Intent match REF-Documentation 7.3; Flow covers sequence-diagram pages; Module covers one bounded context's page in the application documentation set (REF-Documentation 7.11).
+  criticality: high
+  version: 1.2.0
+  status: active
+  test: {'scope': 'unit', 'component': 'ContentCollection', 'type': 'contract'}
+INT-STARLIGHT-005:
+  statement: Every doc page MUST have a `status` frontmatter field with value in {Draft, Active, Deprecated}.
+  rationale: Status drives visibility filters and review queues.
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'ContentCollection', 'type': 'contract'}
+INT-STARLIGHT-006:
+  statement: Every doc page MUST have an `updated` frontmatter field formatted as YYYY-MM-DD.
+  rationale: Drives staleness detection and 'last updated' display in the rendered site.
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'ContentCollection', 'type': 'contract'}
+INT-STARLIGHT-011:
+  statement: "Internal markdown link targets MUST be relative to the current page: no link or image target in doc prose may be root-absolute (start with `/`). Code blocks are exempt (link syntax there is just text)."
+  rationale: Astro's `base` prefixes generated navigation and asset URLs but never rewrites hand-written hrefs, so a root-absolute internal link escapes the site's base path and 404s the moment the site serves under a portal prefix (DOCS_BASE) - a live docs site linked /lifecycle/ instead of ../lifecycle/ and broke exactly this way.
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'ContentCollection', 'type': 'invariant'}
+INT-STARLIGHT-012:
+  statement: "A page with `type: Module` MUST carry the three viewpoints Business, Functional and Technical, each as a level-2 heading or as a tab label, AND a Mermaid `classDiagram` or `erDiagram` drawing its domain model."
+  rationale: A module page describes one bounded context for three readers at once (REF-Documentation 7.4, 7.11), and its domain model is structure, which is drawn before it is described (7.1). A module page missing a viewpoint serves one reader and drops two; one missing the diagram leaves the reader to assemble the model from prose.
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'contract'}
+INT-STARLIGHT-013:
+  statement: Outside the decisions collection (`decisions/`), a page's prose MUST NOT name an ADR identifier (`ADR-NNN`, any case, three or four digits) or link an individual decision page (a target containing `decisions/adr-` in a markdown link, a reference-style link definition or an `href` attribute); a link to the collection itself is allowed anywhere. Fenced code (backtick or tilde fences of any length), inline code and MDX comments are exempt.
+  rationale: "The why lives only in the decision log (REF-Documentation 7.9): docs prose states what is, and reaches rationale through the decisions index, never by inline citation. Each inline ADR reference turns a target page into a change history, one link at a time."
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'invariant'}
+INT-STARLIGHT-014:
+  statement: "A page with `type: Module` MUST carry a `Failure modes` part and a `Claims realised` part, each as a heading (level 2 to 4) of that name in the page's prose. Fenced code and MDX comments are exempt."
+  rationale: "The Module page is the low-level design of its bounded context (REF-Documentation 7.11): what the module is, its contract, its structure, how it fails and what its caller sees, and the intent claims it realises. The viewpoints and the drawn model (INT-STARLIGHT-012) carry the first three; a page without the last two is a design that states no failure behaviour and ties to none of the claims that attest it."
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'unit', 'component': 'PageStructure', 'type': 'contract'}
+INT-STARLIGHT-015:
+  statement: "Every claim id (`INT-...`) a `type: Module` page cites under its `Claims realised` heading MUST be a claim whose status is `active` in the application's `intent.yaml`: the file `APP_INTENT_YAML` names, else the nearest `intent.yaml` in a directory above the docs project. An id that is absent, `draft` or `deprecated` there fails the page, as does any citation when no such file exists; a site whose Module pages cite nothing passes."
+  rationale: "Claims realised is a hand-written mirror of the project's intent specification, so it drifts (REF-Documentation 7.10): a claim retired or renumbered leaves the page citing one the auditor does not attest. The docs project's own intent.yaml holds this bundle's claims, so the application's file is the one above it."
+  criticality: high
+  version: 1.0.0
+  status: active
+  test: {'scope': 'integration', 'component': 'PageStructure', 'type': 'contract'}
+
+# --- the console's own mirrors of a source of truth (REF-Documentation 7.10, 7.11) ---
+
+INT-FC-DOCS-003:
+  version: 1.0.0
+  status: active
+  statement: "The module pages' HTTP surface tables MUST cover the API's OpenAPI export (frontend/src/models/openapi.json) exactly: every exported operation in exactly one module page, and no row naming an operation the export lacks."
+  rationale: "The HTTP surface is a hand-written mirror of the API; held to the export, a route added, removed or moved fails the page that should name it."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: contract
+  criticality: high
+
+INT-FC-DOCS-004:
+  version: 1.0.0
+  status: active
+  statement: "The configuration reference MUST name only chart values that k8s/values.yaml holds and every top-level one of them, and exactly the FC_ environment variables the application reads."
+  rationale: "Configuration tables drift the moment a value or a variable is added; read against the chart and the code, the reference cannot name a knob that does not exist or miss one that does."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: contract
+  criticality: medium
+
+INT-FC-DOCS-005:
+  version: 1.0.0
+  status: active
+  statement: "The decisions index MUST list every decision record in the decisions collection, by its title, and no other."
+  rationale: "The index is the one route into the why; a record missing from it is a decision nobody finds."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: contract
+  criticality: medium
+
+INT-FC-DOCS-006:
+  version: 1.0.0
+  status: active
+  statement: "Every relative link between pages MUST resolve to a page of the site."
+  rationale: "Pages move between folders of the documentation set; an internal link that resolves to no page is a dead end on the reader's spine."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: invariant
+  criticality: high
+
+INT-FC-DOCS-007:
+  version: 1.0.0
+  status: active
+  statement: "Outside the decisions collection, pages MUST NOT link an individual decision record or name one by its number (`decision NNNN`, `ADR NNNN`); a link to the collection itself is allowed."
+  rationale: "The bundle's decisions rule matches `ADR-NNN` identifiers and `decisions/adr-` targets, and this site's records are `decisions/NNNN-slug`; held here in the site's own naming, the why stays reachable only through the collection."
+  test:
+    scope: unit
+    component: ContentCollection
+    type: invariant
+  criticality: high
