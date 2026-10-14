@@ -160,5 +160,5 @@ The scratch moves off the default branch onto **one orphan branch per delivery l
   lines read a prior line's records directly through its tag, which is simpler than today's
   dig through the default branch's pre-drain history.
 - Published prose that narrates the on-main contract (the console and terminal docs, the
-  vf-library flyers describing the delivery line) is revised through each surface's own loop
+  rb-library flyers describing the delivery line) is revised through each surface's own loop
   when the machinery lands.

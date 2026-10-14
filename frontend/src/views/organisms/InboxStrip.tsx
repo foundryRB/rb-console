@@ -69,7 +69,7 @@ export const InboxStrip: React.FC<{
         // queue filtered down to nothing left barely one option standing. Rounding the ends
         // instead keeps the header's fill and the last row's hover inside the radius (the -1px is
         // the border they sit inside) while the panels overhang freely.
-        <div className="app-glass vf-inbox mb-5 rounded-lg border border-border [&>*:last-child]:rounded-b-[calc(var(--radius)-1px)]">
+        <div className="app-glass rb-inbox mb-5 rounded-lg border border-border [&>*:last-child]:rounded-b-[calc(var(--radius)-1px)]">
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5 rounded-t-[calc(var(--radius)-1px)] border-b border-border bg-secondary/40 px-4 py-2">
                 <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                     Inbox

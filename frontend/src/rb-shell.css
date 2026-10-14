@@ -1,0 +1,164 @@
+/* The appearance control and the working screens' layout, in this app's own tokens. */
+:root {
+    --rb-edge: hsl(var(--border));
+    --rb-link: hsl(var(--primary));
+    --rb-shadow: hsl(var(--foreground) / 0.12);
+}
+.rb-appearance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-weight: 500;
+    font-size: 12px;
+}
+.rb-appearance label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.rb-appearance select,
+.rb-appearance button {
+    min-height: 32px;
+    border: 1px solid var(--rb-edge);
+    border-radius: 8px;
+    padding: 5px 9px;
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    font: inherit;
+}
+.rb-appearance button[aria-pressed='true'] {
+    color: var(--rb-link);
+}
+.rb-appearance :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+}
+@media (pointer: coarse) {
+    .rb-appearance select,
+    .rb-appearance button {
+        min-height: 44px;
+    }
+}
+[data-rb-shell] .app-header {
+    gap: 18px;
+}
+[data-rb-shell] .app-header nav {
+    flex-wrap: wrap;
+}
+[data-rb-shell] .app-header .rb-appearance {
+    margin-left: auto;
+}
+[data-rb-shell] .rb-appearance select {
+    width: auto;
+    min-width: 82px;
+}
+.app-console > header > div {
+    padding-block: 10px;
+}
+.app-console > main:not(.flex) {
+    max-width: none;
+    padding: 16px clamp(16px, 1.25vw, 24px) 24px;
+}
+.rb-fleet-board {
+    container-type: inline-size;
+}
+.rb-fleet-table td {
+    padding: 10px 12px;
+    white-space: nowrap;
+}
+.rb-fleet-table th {
+    padding-inline: 12px;
+}
+.rb-fleet-table .rb-project-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.rb-fleet-table .rb-repo-slug {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.rb-fleet-table .rb-project-signals,
+.rb-fleet-table .rb-project-links,
+.rb-fleet-table .rb-project-actions {
+    flex-wrap: nowrap;
+}
+@container (max-width:1100px) {
+    .rb-fleet-table .rb-repo-slug {
+        display: none;
+    }
+}
+.rb-studios-menu {
+    display: none;
+    position: relative;
+}
+.rb-studios-menu summary {
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 5px 8px;
+    border: 1px solid var(--rb-edge);
+    border-radius: 8px;
+    font-size: 12px;
+}
+.rb-studios-menu > div {
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 8px);
+    left: 0;
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    min-width: 220px;
+    border: 1px solid var(--rb-edge);
+    border-radius: 10px;
+    background: hsl(var(--card));
+    box-shadow: 0 12px 24px var(--rb-shadow);
+}
+@media (min-width: 1024px) {
+    .app-console > header > div {
+        flex-wrap: nowrap;
+        gap: 12px;
+    }
+    .app-console > header > div > div.lg\:flex {
+        flex-wrap: nowrap;
+        gap: 10px;
+    }
+}
+@media (min-width: 1024px) and (max-width: 1679px) {
+    .rb-studios-inline {
+        gap: 5px;
+    }
+    .rb-studios-inline .rb-studio-detail,
+    .rb-studios-inline > span:first-child {
+        display: none;
+    }
+    .rb-studios-inline > a > span,
+    .rb-studios-inline > span > span {
+        padding-inline: 6px;
+        font-size: 11px;
+    }
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+    .rb-studios-inline {
+        display: none;
+    }
+    .rb-studios-menu {
+        display: block;
+    }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .rb-product-title {
+        display: none;
+    }
+}
+@media (max-width: 520px) {
+    .app-console > header nav {
+        margin-left: 0;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 10px;
+    }
+}

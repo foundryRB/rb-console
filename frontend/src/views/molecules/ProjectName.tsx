@@ -2,7 +2,7 @@ import type { FleetItem } from '@/models';
 import { githubUrl } from '@/utils';
 
 export const ProjectName: React.FC<{ p: FleetItem }> = ({ p }) => (
-    <div className="vf-project-name min-w-0">
+    <div className="rb-project-name min-w-0">
         <div className="flex items-center gap-1.5">
             <a
                 href={githubUrl(p.repo)}
@@ -31,7 +31,7 @@ export const ProjectName: React.FC<{ p: FleetItem }> = ({ p }) => (
                 </span>
             )}
         </div>
-        <div className="vf-repo-slug font-mono text-[11px] text-muted-foreground" title={p.repo}>
+        <div className="rb-repo-slug font-mono text-[11px] text-muted-foreground" title={p.repo}>
             {p.repo}
         </div>
     </div>

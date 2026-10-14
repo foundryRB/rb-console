@@ -1,5 +1,5 @@
 # foundry-console CI: a thin caller of the platform's reusable build workflow
-# (ADR-019). The build logic lives once in VFPT-VODAFONE-FOUNDRY/adf-ci; this
+# (ADR-019). The build logic lives once in foundryRB/rb-ci; this
 # only points at it, so it cannot drift. Runs on the in-cluster ARC dind runners: it
 # derives a SemVer from Conventional Commits (ADR-024) and pushes the app image
 # (devops/Dockerfile via devops/docker-compose.yml), the Helm chart (k8s/), and the
@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    uses: VFPT-VODAFONE-FOUNDRY/adf-ci/.github/workflows/build.yml@main
+    uses: foundryRB/rb-ci/.github/workflows/build.yml@main
     with:
       app-name: foundry-console
     permissions:

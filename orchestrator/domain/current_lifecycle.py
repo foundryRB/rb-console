@@ -2,7 +2,7 @@
 from .model.lifecycle_definition import LifecycleDefinition
 from .model.phase import Phase
 
-CURRENT_PLAYBOOK_REF = '6724335bfcd22dcd3e5eb4e7958a42e8caf227a7'
+CURRENT_PLAYBOOK_REF = '57ee840d01528fa32cfaf566b20bf5ef4642981d'
 
 CURRENT_SKILL_PATHS = {'adopt': 'galaxies/foundry/skills/adopt/SKILL.md',
  'adversarial-review': 'galaxies/foundry/skills/adversarial-review/SKILL.md',

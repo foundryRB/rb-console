@@ -15,7 +15,7 @@ from orchestrator.domain.model.maintenance_mode import MaintenanceMode
 from orchestrator.domain.model.run_config import RunConfig
 from orchestrator.domain.model.run_mode import RunMode
 
-_ORG_LITERAL = "vfpt-vodafone-foundry"  # the reference install's owner, lower-cased
+_ORG_LITERAL = "foundryrb"  # the reference install's owner, lower-cased
 
 
 def _fresh_state(tmp_path):

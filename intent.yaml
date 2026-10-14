@@ -796,7 +796,7 @@ INT-FC-R72:
   version: 1.1.0
   status: active
   statement: "Seating a worker credential or agent for ANY target MUST NOT write to the target repository: it persists only to Console-local settings and secrets. A repo with no open line (no delivery/* scratch ref; a maintenance-only target) MUST NOT gain one from credential or model configuration; only the model SELECTION (a Console-local setting) and the per-slug credential Secret are written, both Console-side. The set-model and apply-agent paths call no repo write."
-  rationale: "Seating a maintenance worker credential once wrote .delivery/config.json onto the target's main (issue #4: vf-library ed82e3f), fabricating a delivery scratch just to hold agent config and violating REF-Maintenance's derived-state doctrine (no state stored in the repo). The credential Secret by slug was right; the git write was not. Moving the selection Console-local (R45) removes the write entirely, so a bare repo stays bare."
+  rationale: "Seating a maintenance worker credential once wrote .delivery/config.json onto the target's main (issue #4: rb-library ed82e3f), fabricating a delivery scratch just to hold agent config and violating REF-Maintenance's derived-state doctrine (no state stored in the repo). The credential Secret by slug was right; the git write was not. Moving the selection Console-local (R45) removes the write entirely, so a bare repo stays bare."
   test:
     scope: unit
     component: delivery config

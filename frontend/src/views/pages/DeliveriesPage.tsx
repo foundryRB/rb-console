@@ -324,7 +324,7 @@ export const DeliveriesPage: React.FC = () => {
                 />
             </td>
             <td className="px-4 py-3">
-                <span className="vf-project-actions inline-flex flex-wrap items-center gap-2">
+                <span className="rb-project-actions inline-flex flex-wrap items-center gap-2">
                     <Link
                         to={cockpitHref(p.repo)}
                         onClick={(e) => e.stopPropagation()}
@@ -418,7 +418,7 @@ export const DeliveriesPage: React.FC = () => {
                         'grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,min(22vw,360px))]',
                 )}
             >
-                <div className="vf-fleet-board min-w-0">
+                <div className="rb-fleet-board min-w-0">
                     <InboxStrip items={inbox} appNames={appNamesByRepo} />
                     {/* Search the board by name as you type (issue #55). Matches the app name or its
                 owner/name slug - the two identifiers a row shows - and rides the URL (?q=) so a
@@ -595,7 +595,7 @@ export const DeliveriesPage: React.FC = () => {
                     {shown.length > 0 && view === 'table' && (
                         <div className="app-glass overflow-hidden rounded-lg border border-border">
                             <div className="overflow-x-auto">
-                                <table className="vf-fleet-table w-full min-w-[820px] text-sm">
+                                <table className="rb-fleet-table w-full min-w-[820px] text-sm">
                                     <thead>
                                         <tr className="border-b border-border bg-secondary/40 text-[11px] uppercase tracking-wide text-muted-foreground">
                                             <SortHeading

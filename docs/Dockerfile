@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build the Starlight docs site to static HTML, then serve it. The central docs
 # portal (ADR-018, ADR-023) mounts this site at
-# docs.vodafone-foundry.com/apps/foundry-console via a no-rewrite PathPrefix route,
+# docs.rb-foundry.com/apps/foundry-console via a no-rewrite PathPrefix route,
 # so the site must both BUILD and be SERVED under that prefix:
 #   - astro `base` (from DOCS_BASE) prefixes every asset + nav URL with the prefix
 #   - the runtime stage serves the built files UNDER html/<prefix>, because astro's

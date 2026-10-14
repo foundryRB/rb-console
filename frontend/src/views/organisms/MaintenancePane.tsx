@@ -274,7 +274,7 @@ export const MaintenancePane: React.FC<{
             <div className="grid min-h-[560px] flex-1 grid-cols-1 gap-3 lg:min-h-[calc(100dvh-320px)] lg:grid-cols-[minmax(0,1fr)_400px]">
                 <Card
                     className={cn(
-                        'app-glass vf-maintenance min-h-0 min-w-0 flex-col gap-3 p-4',
+                        'app-glass rb-maintenance min-h-0 min-w-0 flex-col gap-3 p-4',
                         pane === 'work' ? 'flex' : 'hidden lg:flex',
                     )}
                 >

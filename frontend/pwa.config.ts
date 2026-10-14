@@ -36,7 +36,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
         scope: '/',
         display: 'standalone',
         // The masthead's own ground and accent, so the window furniture matches the app.
-        theme_color: '#e60000',
+        theme_color: '#00a86b',
         background_color: '#04050a',
         icons: [
             { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

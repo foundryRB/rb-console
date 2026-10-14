@@ -3,7 +3,7 @@ import { useAppearance, type Appearance } from '@/viewmodels/appearance';
 export const AppearanceControl = () => {
     const appearance = useAppearance();
     return (
-        <div className="vf-appearance">
+        <div className="rb-appearance">
             <label>
                 <span className="sr-only">Appearance</span>
                 <select

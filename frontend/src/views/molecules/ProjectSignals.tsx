@@ -16,7 +16,7 @@ export const ProjectSignals: React.FC<{ p: FleetItem; attention?: number }> = ({
     // that is true of them.
     const phases = p.role !== 'core';
     return (
-        <span className="vf-project-signals inline-flex flex-wrap gap-1">
+        <span className="rb-project-signals inline-flex flex-wrap gap-1">
             {phases && (
                 <>
                     <ProjectChip on={p.estimatekit} href={l.estimatekit}>

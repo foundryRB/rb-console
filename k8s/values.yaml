@@ -36,7 +36,7 @@ paused: false
 imagePullSecrets:
   - name: ghcr-pull
 
-host: foundry-console.vodafone-foundry.com
+host: foundry-console.rb-foundry.com
 
 # Per-team Gateway created by foundry-platform (platform/teams/foundry-console.yaml).
 gateway:
@@ -83,7 +83,7 @@ auth:
     adminGroup: ""
   oidc:
     enabled: true
-    issuer: https://keycloak.vodafone-foundry.com/realms/foundry-console
+    issuer: https://keycloak.rb-foundry.com/realms/foundry-console
     clientId: foundry-console
     emailDomains: "*"
     # Client secret + cookie secret; minted in-cluster in this namespace by the

@@ -19,7 +19,7 @@ export const StudiosStrip: React.FC<{ studios: StudioHealth[] }> = ({ studios })
                     aria-hidden
                 />
                 <span className="font-medium">{s.studio}</span>
-                <span className="vf-studio-detail text-muted-foreground">{s.detail}</span>
+                <span className="rb-studio-detail text-muted-foreground">{s.detail}</span>
             </span>
         );
         return s.url ? (
@@ -37,14 +37,14 @@ export const StudiosStrip: React.FC<{ studios: StudioHealth[] }> = ({ studios })
         );
     });
     return (
-        <div className="vf-studios">
-            <div className="vf-studios-inline flex flex-wrap items-center gap-2">
+        <div className="rb-studios">
+            <div className="rb-studios-inline flex flex-wrap items-center gap-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     Studios
                 </span>
                 {chips}
             </div>
-            <details className="vf-studios-menu">
+            <details className="rb-studios-menu">
                 <summary>Studios · {studios.length}</summary>
                 <div>{chips}</div>
             </details>

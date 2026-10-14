@@ -1058,8 +1058,8 @@ const VIEWS: {
 test.describe('light mode reads: every visible text node clears WCAG contrast', () => {
     test.beforeEach(async ({ page }) => {
         await page.addInitScript(() => {
-            localStorage.setItem('vodafone.appearance', 'light');
-            localStorage.setItem('vodafone.motion', 'off');
+            localStorage.setItem('rb.appearance', 'light');
+            localStorage.setItem('rb.motion', 'off');
         });
         await stubApi(page);
     });

@@ -166,7 +166,7 @@ export const CoPilotPanel: React.FC<{
             <div
                 ref={scrollRef}
                 onScroll={onScroll}
-                className="vf-chat-transcript min-h-0 flex-1 overflow-auto rounded-lg border border-border bg-background/80 p-3"
+                className="rb-chat-transcript min-h-0 flex-1 overflow-auto rounded-lg border border-border bg-background/80 p-3"
             >
                 {configured === false && (
                     <p className="text-xs text-muted-foreground">

@@ -1,8 +1,8 @@
 {
   "_comment": "The single home for the vendored playbook pin. update-vendored-helpers.sh writes this file; check_pin_drift.py and tests/test_vendor_pin.py read it. Never hand-edit either this or the vendored files - a hand-edit is a re-implementation wearing a pin's clothes (REF-Delivery anti-pattern 30).",
-  "repo": "VFPT-VODAFONE-FOUNDRY/adf-playbook",
-  "ref": "6724335bfcd22dcd3e5eb4e7958a42e8caf227a7",
-  "pinned_on": "2026-10-05",
+  "repo": "foundryRB/rb-playbook",
+  "ref": "57ee840d01528fa32cfaf566b20bf5ef4642981d",
+  "pinned_on": "2026-10-14",
   "sources": {
     "galaxies/foundry/skills/deliver-engagement": {
       "into": "devops/vendor",
@@ -56,7 +56,7 @@
   },
   "runtime_bundle": {
     "file": "playbook.tar.gz",
-    "sha256": "8c6a41c12ba858f932720f6866aa8ae6a012c186b30a37c888966e69ddcb29b1",
-    "files": 314
+    "sha256": "e35057e8bc1014f2273e6a10ecef3995de25982412dc9326226a5f716206f203",
+    "files": 309
   }
 }

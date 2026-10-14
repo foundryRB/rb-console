@@ -6,7 +6,7 @@ import { mermaidConfig } from '@psa-department-of-engineering/starlight-theme';
 export default defineConfig({
   site: process.env.SITE_URL ?? 'http://localhost:4321',
   // The central docs portal (ADR-018/ADR-023) mounts this site at
-  // docs.vodafone-foundry.com/apps/<app> via a no-rewrite PathPrefix route; CI passes
+  // docs.rb-foundry.com/apps/<app> via a no-rewrite PathPrefix route; CI passes
   // the prefix as DOCS_BASE. Astro `base` prefixes asset + Starlight-generated link
   // URLs so they resolve under the prefix. Defaults to '/' for standalone/local builds.
   base: process.env.DOCS_BASE || '/',
@@ -19,9 +19,9 @@ export default defineConfig({
     starlight({
       title: 'Foundry Console',
       components: { SiteTitle: './src/components/SiteTitle.astro' },
-      logo: { light: './src/assets/vfpt-lockup-light.svg', dark: './src/assets/vfpt-lockup-dark.svg', alt: 'Digital Engineering, Vodafone Portugal' },
+      logo: { light: './src/assets/rb-lockup-light.svg', dark: './src/assets/rb-lockup-dark.svg', alt: 'Software Engineering, RB' },
       description: 'The optional pane onto the Foundry: watch every delivery, drive the Delivery Line.',
-      customCss: ['@psa-department-of-engineering/starlight-theme/styles.css', './src/styles/vodafone.css'],
+      customCss: ['@psa-department-of-engineering/starlight-theme/styles.css', './src/styles/rb.css'],
       lastUpdated: true,
       tableOfContents: {
         minHeadingLevel: 2,
