@@ -1,0 +1,21 @@
+# Per-install values. Keys here are THIS install's own facts, pinned
+# explicitly: the app chart's defaults belong to whichever install it was
+# authored against, and an omitted key inherits them silently.
+# auth.oidc stays on (the chart default): the console only admits people
+# through its sign-in proxy, so it needs the foundry-console Keycloak realm
+# before it is onboarded onto this install.
+foundry-console:
+  githubOwner: foundryrb
+  host: foundry-console.rb-foundry.com
+  config:
+    FC_ORG: foundryRB
+    FC_WORKER_IMAGE: ghcr.io/foundryrb/foundry-console-worker:1.0.0
+  images:
+    app:
+      tag: 1.0.0
+    web:
+      tag: 1.0.0
+    worker:
+      tag: 1.0.0
+    docs:
+      tag: 1.0.0
