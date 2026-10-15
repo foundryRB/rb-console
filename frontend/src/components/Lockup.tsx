@@ -10,6 +10,7 @@
  *   <Lockup mode="light" />           paper: ink tile and words
  *   <Lockup mode="dark" height={36} />   the tile's height in px (default 40); everything scales
  *   <Lockup mode="dark" name="Foundry Console" />  the shell's own name after the words
+ *   <Lockup mode="dark" compact />    the tile alone, for a tight masthead; the words stay in the label
  */
 import type { CSSProperties } from 'react';
 
@@ -17,15 +18,16 @@ export type LockupProps = {
   mode?: 'dark' | 'light';
   height?: number;
   name?: string;
+  compact?: boolean;
   className?: string;
   style?: CSSProperties;
 };
 
-export function Lockup({ mode = 'dark', height = 40, name, className, style }: LockupProps) {
+export function Lockup({ mode = 'dark', height = 40, name, compact = false, className, style }: LockupProps) {
   const s = height / 50; // the reference tile is 50px
   const dark = mode === 'dark';
   const txt = dark ? '#f2f4f8' : '#0d0d0d';
-  const mut = dark ? '#6c7480' : '#7e7e7e';
+  const mut = '#6c7480'; // 4.7:1 on paper, readable on the stage too
   const line = dark ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.12)';
   const sans = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
   const mono = '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
@@ -40,6 +42,7 @@ export function Lockup({ mode = 'dark', height = 40, name, className, style }: L
         <rect x="6" y="6" width="108" height="108" rx="18" fill="none" stroke="currentColor" strokeWidth="8" />
         <text x="60" y="77" textAnchor="middle" fontFamily="system-ui,-apple-system,Segoe UI,sans-serif" fontSize="48" fontWeight="800" fill="currentColor">RB</text>
       </svg>
+      {compact ? null : (
       <span
         style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -53,6 +56,7 @@ export function Lockup({ mode = 'dark', height = 40, name, className, style }: L
           RB
         </i>
       </span>
+      )}
       {name ? (
         <span style={{ marginLeft: 14 * s, paddingLeft: 14 * s, borderLeft: `1px solid ${line}`, fontFamily: sans, fontSize: 15 * s, fontWeight: 400, color: dark ? '#a8b0bd' : '#4a4d4e', whiteSpace: 'nowrap' }}>
           {name}

@@ -15,9 +15,10 @@ export const CockpitHeader: React.FC<{ aside?: React.ReactNode; bar?: React.Reac
     return (
         <header className="app-glass flex-none border-b border-border">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-5">
-                {/* One corporate wordmark; the product name remains live text. */}
+                {/* The RB tile is the masthead's mark; the product name remains live text. The full
+                        lockup (with its words) lives in the docs and the login, where there is room. */}
                 <Link to="/" className="flex shrink-0 items-center gap-3" title="Back to the fleet">
-                    <Lockup mode={resolved} height={36} />
+                    <Lockup mode={resolved} height={36} compact />
                     <span className="flex flex-col leading-tight">
                         <span className="text-sm font-semibold tracking-tight">
                             Foundry Console
