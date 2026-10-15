@@ -3,15 +3,11 @@
 # frontend responsive regression. Separate from build.yml (conformance + release): tests
 # gate the code, the build ships artifacts.
 #
-# Runs on the in-cluster ARC runners (runs-on: arc-dind), like build.yml, so no job
-# consumes GitHub-hosted minutes. Each job runs in a container because the ARC runner is
-# the stock gha-runner-scale-set image (non-root `runner`, no sudo, no preinstalled
-# toolcache): python:3.12 carries Python + git + build tools for the backend and intent
+# Runs on GitHub-hosted runners (runs-on: ubuntu-latest), like build.yml, because this
+# install runs no in-cluster ARC runners. Each job still runs in a container so the
+# toolchain stays pinned: python:3.12 carries Python + git + build tools for the backend and intent
 # jobs, and the matching Playwright image carries the browser + its system deps for the
-# e2e job (so no `--with-deps` apt, which would need the root the runner does not grant).
-#
-# Trade-off (deliberate): tests now depend on the install's cluster being up - when k3s is down they queue
-# for a runner rather than running on GitHub-hosted.
+# e2e job (so no `--with-deps` apt step is needed).
 name: test
 
 on:
@@ -21,7 +17,7 @@ on:
 
 jobs:
   backend:
-    runs-on: arc-dind
+    runs-on: ubuntu-latest
     container: python:3.12
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +35,7 @@ jobs:
       - run: python -m pytest -q
 
   intent-audit:
-    runs-on: arc-dind
+    runs-on: ubuntu-latest
     container: python:3.12
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +49,7 @@ jobs:
   # The documentation site: its page-structure and source-mirror claims (the STARLIGHT bundle
   # and the console's INT-FC-DOCS-*) run here, and the site must build.
   docs:
-    runs-on: arc-dind
+    runs-on: ubuntu-latest
     container: node:22
     defaults:
       run:
@@ -67,7 +63,7 @@ jobs:
   # The frontend component tests: vitest + Testing Library render views in jsdom with the
   # API layer mocked.
   frontend-unit:
-    runs-on: arc-dind
+    runs-on: ubuntu-latest
     container: node:22
     defaults:
       run:
@@ -82,7 +78,7 @@ jobs:
   # layer evolves. Runs in the Playwright image (v1.61.1, matching @playwright/test in the
   # lockfile) so the browser and its system deps are already present - no `--with-deps`.
   frontend-e2e:
-    runs-on: arc-dind
+    runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.61.1-jammy
     defaults:
       run:
