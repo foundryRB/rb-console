@@ -79,7 +79,7 @@ jobs:
   # lockfile) so the browser and its system deps are already present - no `--with-deps`.
   frontend-e2e:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.61.1-jammy
+    container: mcr.microsoft.com/playwright:v1.61.1-noble
     defaults:
       run:
         working-directory: frontend
