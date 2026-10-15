@@ -7,6 +7,13 @@ foundry-console:
       issuer: https://keycloak.rb-foundry.com/realms/foundry-console
       clientId: foundry-console
       existingSecret: keycloak-foundry-console
+  # The backend was OOMKilled at the chart's 512Mi ceiling on this install.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 512Mi
+    limits:
+      memory: 1536Mi
   config:
     FC_ORG: foundryRB
     FC_WORKER_IMAGE: ghcr.io/foundryrb/foundry-console-worker:1.0.0
