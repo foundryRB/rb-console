@@ -16,6 +16,9 @@ foundry-console:
   config:
     FC_ORG: foundryRB
     FC_WORKER_IMAGE: ghcr.io/foundryrb/foundry-console-worker:1.0.0
+    # kubectl (v1.37) crashes at random in its garbage collector on this node (5 of 25
+    # runs failed; 0 of 40 with GC off). It is short-lived, so GC off costs nothing.
+    GOGC: "off"
   images:
     app:
       tag: 1.0.4
