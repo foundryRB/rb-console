@@ -26,5 +26,5 @@ foundry-console:
     worker:
       tag: 1.0.0
     docs:
-      tag: 1.0.3
+      tag: 1.0.4
       repository: ghcr.io/foundryrb/foundry-console-docs
