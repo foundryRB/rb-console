@@ -56,7 +56,12 @@ class K8sCredentialStore:
             "metadata": {"name": name, "namespace": self._ns, "labels": {"foundry-console/delivery": _slugify(slug)}},
             "stringData": {"worker_credential": credential},
         })
-        proc = self._run(["kubectl", "apply", "-f", "-"], input=manifest, text=True, capture_output=True)
+        # --validate=false: the image's kubectl is the latest release, and its client-side schema check
+        # panics on this cluster's OpenAPI document, so every write fails. The manifests are built here
+        # from fixed templates, and the API server still validates them on apply.
+        proc = self._run(
+            ["kubectl", "apply", "--validate=false", "-f", "-"], input=manifest, text=True, capture_output=True
+        )
         if proc.returncode != 0:
             raise SourceUnavailable("Kubernetes credential write was not confirmed")
         return name
@@ -114,7 +119,12 @@ class K8sCredentialStore:
             "metadata": {"name": name, "namespace": self._ns, "labels": {"foundry-console/run": run_id}},
             "stringData": {"worker_credential": credential},
         })
-        proc = self._run(["kubectl", "apply", "-f", "-"], input=manifest, text=True, capture_output=True)
+        # --validate=false: the image's kubectl is the latest release, and its client-side schema check
+        # panics on this cluster's OpenAPI document, so every write fails. The manifests are built here
+        # from fixed templates, and the API server still validates them on apply.
+        proc = self._run(
+            ["kubectl", "apply", "--validate=false", "-f", "-"], input=manifest, text=True, capture_output=True
+        )
         if proc.returncode != 0:
             raise SourceUnavailable("Kubernetes credential write was not confirmed")
         return name

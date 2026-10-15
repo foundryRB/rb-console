@@ -67,8 +67,12 @@ class K8sConfigStore:
         return self.get_setting(name)
 
     def _apply(self, manifest: dict) -> None:
+        # --validate=false: the image's kubectl is the latest release, and its client-side schema check
+        # panics on this cluster's OpenAPI document, so every write fails. The manifests are built here
+        # from fixed templates, and the API server still validates them on apply.
         proc = self._run(
-            ["kubectl", "apply", "-f", "-"], input=json.dumps(manifest), text=True, capture_output=True
+            ["kubectl", "apply", "--validate=false", "-f", "-"],
+            input=json.dumps(manifest), text=True, capture_output=True,
         )
         if proc.returncode != 0:
             raise SourceUnavailable("Kubernetes setting write was not confirmed")
