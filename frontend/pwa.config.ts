@@ -50,19 +50,5 @@ export const pwaOptions: Partial<VitePWAOptions> = {
                 purpose: 'maskable',
             },
         ],
-        screenshots: [
-            {
-                src: 'screenshots/wide.png',
-                sizes: '1280x720',
-                type: 'image/png',
-                form_factor: 'wide',
-            },
-            {
-                src: 'screenshots/narrow.png',
-                sizes: '720x1280',
-                type: 'image/png',
-                form_factor: 'narrow',
-            },
-        ],
     },
 };

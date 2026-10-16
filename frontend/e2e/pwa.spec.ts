@@ -21,7 +21,6 @@ interface Manifest {
     name: string;
     short_name: string;
     icons: Array<{ src: string; sizes: string; purpose?: string }>;
-    screenshots: Array<{ src: string; form_factor?: string }>;
 }
 
 async function readManifest(page: Page): Promise<Manifest> {
@@ -84,24 +83,6 @@ test.describe('installability', () => {
             const apple = await page.locator('link[rel="apple-touch-icon"]').getAttribute('href');
             expect(apple).not.toBeNull();
             expect((await page.request.get(apple ?? '')).ok()).toBe(true);
-        },
-    );
-
-    intent(
-        'INT-FC-R160',
-        'screenshots are declared, for the richer Chromium install dialog',
-        async ({ page }) => {
-            await openFloor(page);
-            const manifest = await readManifest(page);
-            expect(manifest.screenshots.map((s) => s.form_factor).sort()).toEqual([
-                'narrow',
-                'wide',
-            ]);
-            for (const shot of manifest.screenshots) {
-                expect((await page.request.get(`/${shot.src}`)).ok(), `${shot.src} is served`).toBe(
-                    true,
-                );
-            }
         },
     );
 

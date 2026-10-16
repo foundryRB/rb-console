@@ -1772,9 +1772,9 @@ INT-FC-R159:
   criticality: medium
 
 INT-FC-R160:
-  version: 1.0.0
+  version: 1.1.0
   status: active
-  statement: "The console MUST declare a web app manifest, linked with crossorigin=\"use-credentials\", carrying a frozen id and start_url, display standalone, a short_name, at least one icon whose purpose is absent or includes `any` at both 192 and 512 px, an apple-touch-icon that resolves, and screenshots for both form factors; every icon and screenshot it names MUST be served. It MUST NOT register a service worker."
+  statement: "The console MUST declare a web app manifest, linked with crossorigin=\"use-credentials\", carrying a frozen id and start_url, display standalone, a short_name, at least one icon whose purpose is absent or includes `any` at both 192 and 512 px, and an apple-touch-icon that resolves; every icon it names MUST be served. It MUST NOT register a service worker."
   rationale: "Installability is two decisions, not one (REF-PWA section 2), and this claim takes the first without the second. Safari 26 removed every installability requirement, so the console already opens standalone from an iOS Home Screen icon carrying no manifest at all - but Chromium still requires one, so without this there is no installed console on Android, only a browser-badged shortcut that reopens it in Chrome; and with no manifest icons and no apple-touch-icon, iOS falls back to a screenshot of the page under a title that truncates. The credentials attribute is load-bearing rather than decorative: a manifest request carries no cookies by default, even same-origin, so behind the oauth2-proxy sidecar that fronts this console the proxy answers it with a login redirect and installability fails with no visible error. Safari reads a manifest icon only where purpose is absent or includes `any`, so a maskable-only set is invisible to it, and a declared apple-touch-icon wins over the manifest outright. The worker is refused deliberately: the console is a live view of a cluster and has nothing worth showing offline, so it would buy a fast launch in exchange for a cached shell that can outrun a deploy, two ways to break the proxy redirect, and a bad worker that persists on a device until a kill switch reaches it. Adding one later is an ordinary change; removing one after clients have installed is not."
   test:
     scope: e2e
