@@ -21,9 +21,10 @@ COPY orchestrator ./orchestrator
 RUN pip install --no-cache-dir .
 # kubectl: the in-cluster config and credential stores shell out to it, reading the
 # pod ServiceAccount token via the in-cluster config automatically.
+ARG TARGETARCH
 RUN apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates \
- && curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl \
+ && curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl" -o /usr/local/bin/kubectl \
  && chmod +x /usr/local/bin/kubectl \
  && rm -rf /var/lib/apt/lists/*
 # The playbook's gate stamper, for the cockpit's Sign: write_gate runs THIS file over
