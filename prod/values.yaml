@@ -15,6 +15,7 @@ foundry-console:
       memory: 1536Mi
   config:
     FC_ORG: foundryRB
+    FC_DRIVE_LIVE: "1"
     FC_DOMAIN: rb-foundry.com
     FC_WORKER_IMAGE: ghcr.io/foundryrb/foundry-console-worker:1.0.0
     GOGC: "off"
