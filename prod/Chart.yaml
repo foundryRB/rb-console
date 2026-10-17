@@ -7,3 +7,6 @@ dependencies:
   - name: foundry-console
     version: 1.0.0
     repository: oci://ghcr.io/foundryrb/charts
+  - name: argo-workflows
+    version: 1.0.19
+    repository: https://argoproj.github.io/argo-helm

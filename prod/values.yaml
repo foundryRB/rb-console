@@ -31,3 +31,19 @@ foundry-console:
     docs:
       tag: 1.0.7
       repository: ghcr.io/foundryrb/foundry-console-docs
+
+# The console's own single-namespace Argo Workflows controller (ADR-0006).
+# The CRDs are cluster substrate, seeded by rb-platform/seed/install-crds.sh.
+argo-workflows:
+  crds:
+    install: false
+  singleNamespace: true
+  createAggregateRoles: false
+  controller:
+    workflowNamespaces:
+      - foundry-console
+  server:
+    enabled: false
+  workflow:
+    rbac:
+      create: false
