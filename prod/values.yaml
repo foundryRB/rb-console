@@ -17,7 +17,7 @@ foundry-console:
     FC_ORG: foundryRB
     FC_DRIVE_LIVE: "1"
     FC_DOMAIN: rb-foundry.com
-    FC_WORKER_IMAGE: ghcr.io/foundryrb/foundry-console-worker:1.0.0
+    FC_WORKER_IMAGE: ghcr.io/foundryrb/foundry-console-worker:1.0.7
     GOGC: "off"
   images:
     app:
@@ -27,7 +27,7 @@ foundry-console:
       tag: 1.0.7
       repository: ghcr.io/foundryrb/foundry-console-web
     worker:
-      tag: 1.0.0
+      tag: 1.0.7
     docs:
       tag: 1.0.7
       repository: ghcr.io/foundryrb/foundry-console-docs
