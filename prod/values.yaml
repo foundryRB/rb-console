@@ -24,7 +24,7 @@ foundry-console:
       tag: 1.0.8
       repository: ghcr.io/foundryrb/foundry-console-app
     web:
-      tag: 1.0.7
+      tag: 1.0.8
       repository: ghcr.io/foundryrb/foundry-console-web
     worker:
       tag: 1.0.7
