@@ -34,7 +34,7 @@
         --ring: 188 100% 27.4%;
         --radius: 0.6rem;
         --brand: 158 100% 33%;
-        g<1>0 0% 4%;
+        --brand-ink: 0 0% 4%;
         --link: 158 100% 24%;
         --well: 0 0% 72%;
         --faint: hsl(var(--muted-foreground));
@@ -63,7 +63,7 @@
         --ring: 154 70% 59%;
         --radius: 0.6rem;
         --brand: 158 100% 33%;
-        g<1>0 0% 4%;
+        --brand-ink: 0 0% 4%;
         --link: 154 70% 59%;
         --well: 0 0% 0%;
         --faint: hsl(var(--muted-foreground) / 0.6);
